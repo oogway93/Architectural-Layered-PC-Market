@@ -7,15 +7,15 @@ import (
 )
 
 type Server struct {
-httpServer *http.Server
+	httpServer *http.Server
 }
 
 func (s *Server) Run(port string, handler http.Handler) error {
 	s.httpServer = &http.Server{
-		Addr: ":" + port,
-		Handler: handler,
-		ReadTimeout: 5 * time.Second,
-		WriteTimeout: 5 * time.Second,
+		Addr:           ":" + port,
+		Handler:        handler,
+		ReadTimeout:    5 * time.Second,
+		WriteTimeout:   5 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 	return s.httpServer.ListenAndServe()

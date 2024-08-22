@@ -1,23 +1,28 @@
 package handlerShop
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/oogway93/golangArchitecture/internal/service"
+)
 
-// type Handler struct {
-// 	services *service.Service
-// }
+type Handler struct {
+	service *service.Service
+}
 
-// func NewHandler(services *service.Service) *Handler {
-// 	return &Handler{services: services}
-// }
+func NewCategoryShopServer(service *service.Service) *Handler {
+	return &Handler{
+		service: service,
+	}
+}
 
-func HandlerRoutes() *gin.Engine{
-	r:= gin.Default()
-	
+func (h *Handler) HandlerRoutes() *gin.Engine {
+	r := gin.Default()
+
 	api := r.Group("/api")
 	{
 		productList := api.Group("/productList")
 		{
-			productList.GET("/", HelloWorldCon)
+			productList.GET("/", h.HelloWorldCon)
 			productList.POST("/", nil)
 			productList.GET("/:id", nil)
 			productList.PUT("/:id", nil)
