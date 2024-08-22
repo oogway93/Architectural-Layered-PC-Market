@@ -1,19 +1,28 @@
-package handlersShop
+package handlerShop
 
 import "github.com/gin-gonic/gin"
 
-func HandlerRoutes(c *gin.Context) {
+// type Handler struct {
+// 	services *service.Service
+// }
+
+// func NewHandler(services *service.Service) *Handler {
+// 	return &Handler{services: services}
+// }
+
+func HandlerRoutes() *gin.Engine{
 	r:= gin.Default()
 	
-	api := r.Group("/api", nil)
+	api := r.Group("/api")
 	{
-		productList := r.Group("/productList")
+		productList := api.Group("/productList")
 		{
-			productList.GET("/", nil)
+			productList.GET("/", HelloWorldCon)
 			productList.POST("/", nil)
 			productList.GET("/:id", nil)
 			productList.PUT("/:id", nil)
 			productList.DELETE("/:id", nil)
 		}
 	}
+	return r
 }
