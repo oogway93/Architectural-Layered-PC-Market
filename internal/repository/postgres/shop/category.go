@@ -1,4 +1,4 @@
-package repositoryShop
+package repositoryPostgresShop
 
 import (
 	"github.com/jmoiron/sqlx"
@@ -8,8 +8,7 @@ import (
 type CategoryShopPostgres struct {
 	db *sqlx.DB
 }
-
-func NewCategoryShop(db *sqlx.DB) *CategoryShopPostgres {
+func NewRepositoryCategoryShop(db *sqlx.DB) *CategoryShopPostgres {
 	return &CategoryShopPostgres{
 		db: db,
 	}

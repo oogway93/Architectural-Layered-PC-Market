@@ -6,15 +6,15 @@ import (
 )
 
 type CategoryShopService struct {
-	repo repository.CategoryRepository
+	repositoryShop repository.CategoryRepository
 }
 
-func NewCategoryShopService(repo repository.CategoryRepository) *CategoryShopService {
+func NewServiceShopCategory(repo repository.CategoryRepository) *CategoryShopService {
 	return &CategoryShopService{
-		repo: repo,
+		repositoryShop: repo,
 	}
 }
 
-func GetAll(s *CategoryShopService) ([]products.Category, error) {
+func (c *CategoryShopService) GetAll() ([]products.Category, error) {
 	return nil, nil
 }

@@ -9,13 +9,13 @@ type Handler struct {
 	service *service.Service
 }
 
-func NewCategoryShopServer(service *service.Service) *Handler {
+func NewCategoryShopHandler(service *service.Service) *Handler {
 	return &Handler{
 		service: service,
 	}
 }
 
-func (h *Handler) HandlerRoutes() *gin.Engine {
+func (h *Handler) ShopHandlerRoutes() *gin.Engine {
 	r := gin.Default()
 
 	api := r.Group("/api")

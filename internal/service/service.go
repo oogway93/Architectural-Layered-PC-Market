@@ -3,19 +3,19 @@ package service
 import (
 	"github.com/oogway93/golangArchitecture/internal/entity/products"
 	"github.com/oogway93/golangArchitecture/internal/repository"
-	"github.com/oogway93/golangArchitecture/internal/service/shop/serviceShop"
+	"github.com/oogway93/golangArchitecture/internal/service/shop"
 )
 
-type CategoryService interface {
+type ServiceCategory interface {
 	GetAll() ([]products.Category, error)
 }
 
 type Service struct {
-	CategoryService
+	ServiceCategory ServiceCategory
 }
 
-func NewService(repo *repository.CategoryRepository) *Service {
+func NewService(repo *repository.Repository) *Service {
 	return &Service{
-		CategoryService: serviceShop.NewCategoryShopService(repo),
+		ServiceCategory: serviceShop.NewServiceShopCategory(repo.CategoryRepository),
 	}
 }
