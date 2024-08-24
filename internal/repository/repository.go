@@ -13,8 +13,4 @@ type Repository struct {
 	CategoryRepository CategoryRepository
 }
 
-// func NewRepository(db *sqlx.DB) *Repository{
-// 	return &Repository{
-// 		CategoryRepository: NewCategoryShop(),
-// 	}
-// }
+

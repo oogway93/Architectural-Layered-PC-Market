@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
+	// _ "github.com/lib/pq"
 	repositoryPostgres "github.com/oogway93/golangArchitecture/internal/repository/postgres"
 	"github.com/oogway93/golangArchitecture/internal/server/http"
 
@@ -19,7 +19,7 @@ func main() {
 	}
 	PORT := os.Getenv("PORT")
 
-	db, err := repositoryPostgres.NewPostgresDB(repositoryPostgres.Config{
+	db, err := repositoryPostgres.DatabaseConnection(repositoryPostgres.Config{
 		Username: os.Getenv("DB_USERNAME"),
 		Password: os.Getenv("DB_PASSWORD"),
 		Host:     os.Getenv("DB_HOST"),

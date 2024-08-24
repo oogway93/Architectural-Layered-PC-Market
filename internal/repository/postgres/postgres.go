@@ -2,12 +2,13 @@ package repositoryPostgres
 
 import (
 	"fmt"
+	"log"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/oogway93/golangArchitecture/internal/repository"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/shop"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
-
 
 type Config struct {
 	Username string
@@ -18,22 +19,21 @@ type Config struct {
 	SSLMode  string
 }
 
-func NewPostgresDB(cfg Config) (*sqlx.DB, error) {
-	db, err := sqlx.Open("postgres", fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s sslmode=%s",
-		cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName, cfg.SSLMode))
-	if err != nil {
-		return nil, err
-	}
+func DatabaseConnection(cfg Config) (*gorm.DB, error) {
 
-	err = db.Ping()
+	sqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", cfg.Host, cfg.Port, cfg.Username, cfg.Password, cfg.DBName, cfg.SSLMode)
+
+	db, err := gorm.Open(postgres.Open(sqlInfo), &gorm.Config{})
+
 	if err != nil {
+		log.Fatalf("Error with initialized gorm db: %v", err)
 		return nil, err
 	}
 
 	return db, nil
 }
 
-func NewRepository(db *sqlx.DB) *repository.Repository {
+func NewRepository(db *gorm.DB) *repository.Repository {
 	return &repository.Repository{
 		CategoryRepository: repositoryPostgresShop.NewRepositoryCategoryShop(db),
 	}

@@ -1,14 +1,14 @@
 package repositoryPostgresShop
 
 import (
-	"github.com/jmoiron/sqlx"
 	"github.com/oogway93/golangArchitecture/internal/entity/products"
+	"gorm.io/gorm"
 )
 
 type CategoryShopPostgres struct {
-	db *sqlx.DB
+	db *gorm.DB
 }
-func NewRepositoryCategoryShop(db *sqlx.DB) *CategoryShopPostgres {
+func NewRepositoryCategoryShop(db *gorm.DB) *CategoryShopPostgres {
 	return &CategoryShopPostgres{
 		db: db,
 	}
