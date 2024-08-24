@@ -15,19 +15,17 @@ func NewCategoryShopHandler(service *service.Service) *Handler {
 	}
 }
 
-func (h *Handler) ShopHandlerRoutes() *gin.Engine {
-	r := gin.Default()
+func (h *Handler) ShopHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.RouterGroup {
 
-	api := r.Group("/api")
+	
+	productList := apiRoutes.Group("/productList")
 	{
-		productList := api.Group("/productList")
-		{
-			productList.GET("/", h.HelloWorldCon)
-			productList.POST("/", nil)
-			productList.GET("/:id", nil)
-			productList.PUT("/:id", nil)
-			productList.DELETE("/:id", nil)
-		}
+		productList.GET("/", h.HelloWorldCon)
+		productList.POST("/", nil)
+		productList.GET("/:id", nil)
+		productList.PUT("/:id", nil)
+		productList.DELETE("/:id", nil)
 	}
-	return r
+	
+	return productList
 }

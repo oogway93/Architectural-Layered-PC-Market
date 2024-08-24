@@ -3,13 +3,12 @@ package main
 import (
 	"log"
 	"os"
-	_ "github.com/lib/pq"
+
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	repositoryPostgres "github.com/oogway93/golangArchitecture/internal/repository/postgres"
 	"github.com/oogway93/golangArchitecture/internal/server/http"
-	// "github.com/oogway93/golangArchitecture/internal/server/http/handler/shop"
 
-	handlerUser "github.com/oogway93/golangArchitecture/internal/server/http/handler/user"
 	"github.com/oogway93/golangArchitecture/internal/service"
 )
 
@@ -36,13 +35,11 @@ func main() {
 
 	repo := repositoryPostgres.NewRepository(db)
 	service := service.NewService(repo)
-	// handlersProduct :=  handlerShop.NewCategoryShopHandler(service)
-	handlersUser :=  handlerUser.NewUserHandler(service)
-	
+	router := http.SetupRouter(service)
+
 	server := new(http.Server)
-	if err := server.Run(PORT, handlersUser.UserHandlerRoutes()); err != nil {
+	if err := server.Run(PORT, router); err != nil {
 		log.Fatal("Some errors in initialization routes",
 			err)
 	}
 }
-

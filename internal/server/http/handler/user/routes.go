@@ -15,19 +15,15 @@ func NewUserHandler(service *service.Service) *Handler {
 	}
 }
 
-func (h *Handler) UserHandlerRoutes() *gin.Engine {
-	r := gin.Default()
-
-	api := r.Group("/api")
+func (h *Handler) UserHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.RouterGroup {
+	user := apiRoutes.Group("/user")
 	{
-		user := api.Group("/user")
-		{
-			user.GET("/", h.HelloWorldCon)
-			user.POST("/", nil)
-			user.GET("/:id", nil)
-			user.PUT("/:id", nil)
-			user.DELETE("/:id", nil)
-		}
+		user.GET("/", h.HelloWorldCon)
+		user.POST("/", nil)
+		user.GET("/:id", nil)
+		user.PUT("/:id", nil)
+		user.DELETE("/:id", nil)
 	}
-	return r
+	
+	return user
 }
