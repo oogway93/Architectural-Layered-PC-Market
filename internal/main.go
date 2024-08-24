@@ -3,10 +3,12 @@ package main
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
-	// _ "github.com/lib/pq"
+	_ "github.com/lib/pq"
 	repositoryPostgres "github.com/oogway93/golangArchitecture/internal/repository/postgres"
+	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
 	"github.com/oogway93/golangArchitecture/internal/server/http"
 
 	"github.com/oogway93/golangArchitecture/internal/service"
@@ -18,20 +20,16 @@ func main() {
 			err)
 	}
 	PORT := os.Getenv("PORT")
-
-	db, err := repositoryPostgres.DatabaseConnection(repositoryPostgres.Config{
+	DB_PORT, _ := strconv.Atoi(os.Getenv("DB_PORT"))
+	db:= repositoryPostgres.DatabaseConnection(repositoryPostgres.Config{
 		Username: os.Getenv("DB_USERNAME"),
 		Password: os.Getenv("DB_PASSWORD"),
 		Host:     os.Getenv("DB_HOST"),
-		Port:     os.Getenv("DB_PORT"),
+		Port:     DB_PORT,
 		DBName:   os.Getenv("DB_NAME"),
 		SSLMode:  os.Getenv("DB_SSLMode"),
 	})
-
-	if err != nil {
-		log.Fatal("Failed to initialized db",
-			err)
-	}
+	db.Table("users").AutoMigrate(&models.User{})
 
 	repo := repositoryPostgres.NewRepository(db)
 	service := service.NewService(repo)

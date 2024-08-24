@@ -1,8 +1,12 @@
 package user
 
-type User struct {
-	Name string `json:"name"`
-	Age int `json:"age"`
-	Country string `json:"country"`
+type UserCreate struct {
+	ID       string `'json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
+type User struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}

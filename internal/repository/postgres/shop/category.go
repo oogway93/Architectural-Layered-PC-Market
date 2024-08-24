@@ -8,6 +8,7 @@ import (
 type CategoryShopPostgres struct {
 	db *gorm.DB
 }
+
 func NewRepositoryCategoryShop(db *gorm.DB) *CategoryShopPostgres {
 	return &CategoryShopPostgres{
 		db: db,
@@ -15,5 +16,6 @@ func NewRepositoryCategoryShop(db *gorm.DB) *CategoryShopPostgres {
 }
 
 func (d *CategoryShopPostgres) GetAll() ([]products.Category, error) {
+	// d.db.Create(models.User)
 	return nil, nil
 }
