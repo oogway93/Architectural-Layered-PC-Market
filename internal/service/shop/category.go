@@ -22,3 +22,17 @@ func (c *CategoryShopService) Create(requestData *products.Category) {
 	}
 	c.repositoryShopCategory.Create(categoryModel)
 }
+
+func (c *CategoryShopService) GetAll() []map[string]interface{} {
+	result := c.repositoryShopCategory.GetAll()
+	return result
+}
+func (c *CategoryShopService) Get(categoryID string) string {
+	result := c.repositoryShopCategory.Get(categoryID)
+	return result
+}
+
+func (c *CategoryShopService) Delete(categoryID string) {
+	// result := c.repositoryShopCategory.Delete()
+}
+func (c *CategoryShopService) Update(categoryID string) {}

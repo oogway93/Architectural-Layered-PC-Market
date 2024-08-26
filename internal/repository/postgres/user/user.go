@@ -52,13 +52,11 @@ func (d *UserPostgres) Update(loginID string, newUser models.User) (error){
 	tx := d.db.Begin()
 	result := d.db.Where("login = ?", loginID).First(&user)
     if result.Error != nil {
-        // Handle error (e.g., user not found)
         return result.Error
     }
 	user.Username = newUser.Username
     user.Password = newUser.Password
 	user.UpdatedAt = time.Now()
-    // Add any other fields you need to update
 
     result = d.db.Save(&user)
 	tx.Commit()
@@ -70,7 +68,6 @@ func (d *UserPostgres) Delete(loginID string) error {
 	tx := d.db.Begin()
 	result := d.db.Where("login = ?", loginID).Delete(&user)
 	if result.Error != nil {
-        // Handle error (e.g., user not found)
         return result.Error
     }
 	tx.Commit()

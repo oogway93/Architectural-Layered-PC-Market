@@ -10,24 +10,28 @@ import (
 )
 
 type ServiceCategory interface {
-	Create(requestData *products.Category) ()
+	Create(requestData *products.Category)
+	Get(categoryID string) string
+	GetAll() []map[string]interface{}
+	Delete(categoryID string)
+	Update(categoryID string)
 }
 
 type ServiceUser interface {
-	Create(requestData *user.User) ()
+	Create(requestData *user.User)
 	GetAll() []map[string]interface{}
-	Update(loginID string, requestData *user.UserUpdated) (error)
-	Delete(loginID string) (error)
+	Update(loginID string, requestData *user.UserUpdated) error
+	Delete(loginID string) error
 }
 
 type Service struct {
 	ServiceCategory ServiceCategory
-	ServiceUser ServiceUser
+	ServiceUser     ServiceUser
 }
 
 func NewService(repo *repository.Repository) *Service {
 	return &Service{
 		ServiceCategory: serviceShop.NewServiceShopCategory(repo.CategoryRepository),
-		ServiceUser: serviceUser.NewServiceUser(repo.UserRepository),
+		ServiceUser:     serviceUser.NewServiceUser(repo.UserRepository),
 	}
 }

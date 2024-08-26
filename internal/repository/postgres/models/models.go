@@ -13,5 +13,5 @@ type User struct {
 type Category struct {
 	gorm.Model
 	Id           uint   `json:"id" gorm:"unique; primaryKey; autoIncrement"`
-	CategoryName string `json:"categoryName" gorm:"column: categoryName; type: varchar(64); unique; not null"`
+	CategoryName string `json:"category_name" gorm:"type:varchar(64); unique; not null"`
 }

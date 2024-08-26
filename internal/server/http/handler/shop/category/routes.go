@@ -18,11 +18,11 @@ func NewCategoryShopHandler(service *service.Service) *Handler {
 func (h *Handler) ShopCategoryHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.RouterGroup {
 	category := apiRoutes.Group("/category")
 	{
-		category.GET("/", nil)
+		category.GET("/", h.GetAll)
 		category.POST("/", h.Create)
-		category.GET("/:categoryID", nil)
-		category.PUT("/:categoryID", nil)
-		category.DELETE("/:categoryID", nil)
+		category.GET("/:category", h.Get)
+		category.PUT("/:category", nil)
+		category.DELETE("/:category", nil)
 	}
 	
 	return category
