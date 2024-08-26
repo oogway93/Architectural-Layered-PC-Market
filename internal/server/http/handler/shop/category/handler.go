@@ -1,0 +1,29 @@
+package handlerShop
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/oogway93/golangArchitecture/internal/entity/products"
+	"github.com/oogway93/golangArchitecture/internal/errors/data/response"
+)
+
+func (h *Handler) Create(c *gin.Context) {
+	var newCategory products.Category
+
+	err := c.BindJSON(&newCategory)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON payload"})
+		return
+	}
+	h.service.ServiceCategory.Create(&newCategory)
+
+	webResponse := response.WebResponse{
+		Code:   http.StatusCreated,
+		Status: "Ok",
+		Data:   nil,
+	}
+
+	c.Header("Content-Type", "application/json")
+	c.JSON(http.StatusCreated, webResponse)
+}

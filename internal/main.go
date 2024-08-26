@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 	repositoryPostgres "github.com/oogway93/golangArchitecture/internal/repository/postgres"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
-	"github.com/oogway93/golangArchitecture/internal/server/http"
+	HTTP "github.com/oogway93/golangArchitecture/internal/server/http"
 
 	"github.com/oogway93/golangArchitecture/internal/service"
 )
@@ -30,12 +30,13 @@ func main() {
 		SSLMode:  os.Getenv("DB_SSLMode"),
 	})
 	db.Table("users").AutoMigrate(&models.User{})
+	db.Table("categories").AutoMigrate(&models.Category{})
 
 	repo := repositoryPostgres.NewRepository(db)
 	service := service.NewService(repo)
-	router := serverHTTP.SetupRouter(service)
+	router := HTTP.SetupRouter(service)
 
-	server := new(serverHTTP.Server)
+	server := new(HTTP.Server)
 	if err := server.Run(PORT, router); err != nil {
 		log.Fatal("Some errors in initialization routes",
 			err)

@@ -1,13 +1,12 @@
 package repository
 
 import (
-	"github.com/oogway93/golangArchitecture/internal/entity/products"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
 )
 
 
 type CategoryRepository interface {
-	GetAll() ([]products.Category,error)
+	Create(requestData models.Category) ()
 }
 
 type UserRepository interface {

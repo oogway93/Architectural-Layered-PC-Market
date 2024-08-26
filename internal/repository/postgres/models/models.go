@@ -9,3 +9,9 @@ type User struct {
 	Username string `json:"username" gorm:"type: varchar(32)"`
 	Password string `json:"password" gorm:"type: varchar(32)"`
 }
+
+type Category struct {
+	gorm.Model
+	Id           uint   `json:"id" gorm:"unique; primaryKey; autoIncrement"`
+	CategoryName string `json:"categoryName" gorm:"column: categoryName; type: varchar(64); unique; not null"`
+}

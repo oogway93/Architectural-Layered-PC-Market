@@ -1,6 +1,7 @@
 package service
 
 import (
+	// "github.com/oogway93/golangArchitecture/internal/entity/products"
 	"github.com/oogway93/golangArchitecture/internal/entity/products"
 	"github.com/oogway93/golangArchitecture/internal/entity/user"
 	"github.com/oogway93/golangArchitecture/internal/repository"
@@ -9,7 +10,7 @@ import (
 )
 
 type ServiceCategory interface {
-	GetAll() ([]products.Category, error)
+	Create(requestData *products.Category) ()
 }
 
 type ServiceUser interface {

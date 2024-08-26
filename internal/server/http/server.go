@@ -1,4 +1,4 @@
-package serverHTTP
+package HTTP
 
 import (
 	"context"
