@@ -40,3 +40,8 @@ func (c *UserService) Update(loginId string, requestData *user.UserUpdated) erro
 	status := c.repositoryUser.Update(loginId, userModel)
 	return status
 }
+
+func (c *UserService) Delete(loginID string) error {
+	result := c.repositoryUser.Delete(loginID)
+	return result
+}

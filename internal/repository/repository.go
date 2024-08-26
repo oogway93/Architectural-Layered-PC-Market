@@ -13,7 +13,8 @@ type CategoryRepository interface {
 type UserRepository interface {
 	Create(newUser models.User) ()
 	GetAll() []map[string]interface{}
-	Update(loginId string, newUser models.User) (error)
+	Update(loginID string, newUser models.User) (error)
+	Delete(loginID string) (error)
 }
 
 type Repository struct {

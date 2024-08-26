@@ -51,8 +51,24 @@ func (h *Handler) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON payload"})
 		return
 	}
-	loginId := c.Param("login")
+	loginID := c.Param("login")
 
-	h.service.ServiceUser.Update(loginId, &newUser)
-	c.JSON(http.StatusCreated, gin.H{"message": "User updated successfully"})
+	h.service.ServiceUser.Update(loginID, &newUser)
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "User UPDATED successfully",
+	})
+}
+
+func (h *Handler) Delete(c *gin.Context) {
+	loginID := c.Param("login")
+	result := h.service.ServiceUser.Delete(loginID)
+	if result != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "DELETE method doesn't work",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User DELETED successfully",
+	})
 }

@@ -20,9 +20,9 @@ func (h *Handler) UserHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.RouterGroup
 	{
 		user.GET("/", h.GetAll)
 		user.POST("/", h.Create)
-		user.GET("/:id", nil)
+		user.GET("/:login", nil)
 		user.PUT("/:login", h.Update)
-		user.DELETE("/:id", nil)
+		user.DELETE("/:login", h.Delete)
 	}
 
 	return user

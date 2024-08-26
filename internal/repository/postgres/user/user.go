@@ -50,7 +50,7 @@ func (d *UserPostgres) GetAll() []map[string]interface{} {
 func (d *UserPostgres) Update(loginID string, newUser models.User) (error){
 	var user models.User
 	tx := d.db.Begin()
-	result := d.db.Where("login = ? AND deleted_at IS NULL", loginID).First(&user)
+	result := d.db.Where("login = ?", loginID).First(&user)
     if result.Error != nil {
         // Handle error (e.g., user not found)
         return result.Error
@@ -65,4 +65,14 @@ func (d *UserPostgres) Update(loginID string, newUser models.User) (error){
     return result.Error
 }
 
-// func (d *UserPostgres) Delete(userId int, )
+func (d *UserPostgres) Delete(loginID string) error {
+	var user models.User
+	tx := d.db.Begin()
+	result := d.db.Where("login = ?", loginID).Delete(&user)
+	if result.Error != nil {
+        // Handle error (e.g., user not found)
+        return result.Error
+    }
+	tx.Commit()
+	return result.Error
+}
