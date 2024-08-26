@@ -13,7 +13,9 @@ type ServiceCategory interface {
 }
 
 type ServiceUser interface {
-	Create(requestData *user.User)
+	Create(requestData *user.User) ()
+	GetAll() []map[string]interface{}
+	Update(loginId string, requestData *user.UserUpdated) (error)
 }
 
 type Service struct {

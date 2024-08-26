@@ -16,6 +16,5 @@ func NewRepositoryCategoryShop(db *gorm.DB) *CategoryShopPostgres {
 }
 
 func (d *CategoryShopPostgres) GetAll() ([]products.Category, error) {
-	// d.db.Create(models.User)
 	return nil, nil
 }

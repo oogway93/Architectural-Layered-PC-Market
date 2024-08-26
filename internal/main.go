@@ -33,9 +33,9 @@ func main() {
 
 	repo := repositoryPostgres.NewRepository(db)
 	service := service.NewService(repo)
-	router := http.SetupRouter(service)
+	router := serverHTTP.SetupRouter(service)
 
-	server := new(http.Server)
+	server := new(serverHTTP.Server)
 	if err := server.Run(PORT, router); err != nil {
 		log.Fatal("Some errors in initialization routes",
 			err)

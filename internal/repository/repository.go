@@ -11,7 +11,9 @@ type CategoryRepository interface {
 }
 
 type UserRepository interface {
-	Create(user models.User) ()
+	Create(newUser models.User) ()
+	GetAll() []map[string]interface{}
+	Update(loginId string, newUser models.User) (error)
 }
 
 type Repository struct {

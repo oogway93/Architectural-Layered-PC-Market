@@ -1,4 +1,4 @@
-package http
+package serverHTTP
 
 import (
 	"github.com/gin-gonic/gin"

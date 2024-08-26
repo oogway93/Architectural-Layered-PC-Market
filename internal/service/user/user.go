@@ -16,12 +16,27 @@ func NewServiceUser(repo repository.UserRepository) *UserService {
 	}
 }
 
-func  (c *UserService) Create(requestData *user.User) {
+func (c *UserService) Create(requestData *user.User) {
 	userModel := models.User{
-		ID: 1,
+		Login:    requestData.Login,
 		Username: requestData.Username,
 		Password: requestData.Password,
 	}
 	c.repositoryUser.Create(userModel)
 
+}
+
+func (c *UserService) GetAll() []map[string]interface{} {
+	result := c.repositoryUser.GetAll()
+	return result
+
+}
+
+func (c *UserService) Update(loginId string, requestData *user.UserUpdated) error {
+	userModel := models.User{
+		Username: requestData.Username,
+		Password: requestData.Password,
+	}
+	status := c.repositoryUser.Update(loginId, userModel)
+	return status
 }
