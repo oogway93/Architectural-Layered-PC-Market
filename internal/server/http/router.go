@@ -2,8 +2,7 @@ package HTTP
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/oogway93/golangArchitecture/internal/server/http/handler/shop/category"
-	"github.com/oogway93/golangArchitecture/internal/server/http/handler/user"
+	handlerUser "github.com/oogway93/golangArchitecture/internal/server/http/handler/user"
 	"github.com/oogway93/golangArchitecture/internal/service"
 )
 
@@ -18,7 +17,7 @@ func SetupRouter(service *service.Service) *gin.Engine {
 }
 
 func registerShopCAtegoryRoutes(service *service.Service, apiRoutes *gin.RouterGroup) {
-	handlerShop.NewCategoryShopHandler(service).ShopCategoryHandlerRoutes(apiRoutes)
+	handlerShopCategory.NewCategoryShopHandler(service).ShopCategoryHandlerRoutes(apiRoutes)
 }
 
 func registerUserRoutes(service *service.Service, apiRoutes *gin.RouterGroup) {

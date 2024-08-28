@@ -1,4 +1,4 @@
-package handlerShop
+package handlerShopCategory
 
 import (
 	"github.com/gin-gonic/gin"

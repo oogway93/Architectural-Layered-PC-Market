@@ -1,4 +1,4 @@
-package handlerShop
+package handlerShopCategory
 
 import (
 	"net/http"

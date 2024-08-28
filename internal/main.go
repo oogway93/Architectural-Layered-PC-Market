@@ -31,6 +31,7 @@ func main() {
 	})
 	db.Table("users").AutoMigrate(&models.User{})
 	db.Table("categories").AutoMigrate(&models.Category{})
+	db.Table("product").AutoMigrate(&models.Product{})
 
 	repo := repositoryPostgres.NewRepository(db)
 	service := service.NewService(repo)
