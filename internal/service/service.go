@@ -13,8 +13,8 @@ type ServiceCategory interface {
 	Create(requestData *products.Category)
 	Get(categoryID string) string
 	GetAll() []map[string]interface{}
-	Delete(categoryID string)
-	Update(categoryID string)
+	Delete(categoryID string) error
+	Update(categoryID string, requestData products.Category) error
 }
 
 type ServiceUser interface {

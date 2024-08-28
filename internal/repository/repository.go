@@ -8,8 +8,9 @@ import (
 type CategoryRepository interface {
 	Create(requestData models.Category) ()
 	GetAll() ([]map[string]interface{}) 
-	Delete(categoryID string) (error)
+	Delete(categoryID string) error
 	Get(categoryID string) string
+	Update(categoryID string, newCategory models.Category) error
 }
 
 type UserRepository interface {

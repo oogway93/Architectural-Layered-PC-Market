@@ -2,6 +2,7 @@ package repositoryPostgresShop
 
 import (
 	"log"
+	"time"
 
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
 	"gorm.io/gorm"
@@ -19,11 +20,22 @@ func NewRepositoryCategoryShop(db *gorm.DB) *CategoryShopPostgres {
 
 func (d *CategoryShopPostgres) Create(newCategory models.Category) {
 	tx := d.db.Begin()
+	categoryName := newCategory.CategoryName
 
-	result := d.db.Create(&newCategory)
+	var existingCategory models.Category
+	result := d.db.Unscoped().Where("category_name = ? AND deleted_at IS NOT NULL", categoryName).First(&existingCategory)
 
-	if result.Error != nil {
-		log.Printf("Error creating new category: %v", result.Error)
+	if result.Error == nil {
+		rawSQL := `UPDATE categories SET deleted_at = NULL WHERE category_name = ?`
+		d.db.Exec(rawSQL, existingCategory.CategoryName)
+		log.Printf("Restored category: %s", categoryName)
+	} else {
+		result = d.db.Create(&newCategory)
+		if result.Error != nil {
+			log.Printf("Error creating new category: %v", result.Error)
+		} else {
+			log.Printf("Created new category: %s", categoryName)
+		}
 	}
 	tx.Commit()
 }
@@ -49,7 +61,7 @@ func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 func (d *CategoryShopPostgres) Delete(categoryID string) error {
 	var category models.Category
 	tx := d.db.Begin()
-	result := d.db.Where("categoryName = ?", categoryID).Delete(&category)
+	result := d.db.Where("category_name = ?", categoryID).Delete(&category)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -64,4 +76,18 @@ func (d *CategoryShopPostgres) Get(categoryID string) string {
 		log.Fatalf("Error repositrory: %v", result)
 	}
 	return category.CategoryName
+}
+
+func (d *CategoryShopPostgres) Update(categoryID string, newCategory models.Category) error {
+	var category models.Category
+	tx := d.db.Begin()
+	result := d.db.Where("category_name = ? AND deleted_at IS NULL", categoryID).First(&category)
+	if result.Error != nil {
+		return result.Error
+	}
+	category.CategoryName = newCategory.CategoryName
+	category.UpdatedAt = time.Now()
+	result = d.db.Save(&category)
+	tx.Commit()
+	return result.Error
 }

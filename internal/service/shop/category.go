@@ -32,7 +32,14 @@ func (c *CategoryShopService) Get(categoryID string) string {
 	return result
 }
 
-func (c *CategoryShopService) Delete(categoryID string) {
-	// result := c.repositoryShopCategory.Delete()
+func (c *CategoryShopService) Delete(categoryID string) error {
+	result := c.repositoryShopCategory.Delete(categoryID)
+	return result
 }
-func (c *CategoryShopService) Update(categoryID string) {}
+func (c *CategoryShopService) Update(categoryID string, requestData products.Category) error {
+	categoryModel := models.Category{
+		CategoryName: requestData.CategoryName,
+	}
+	result := c.repositoryShopCategory.Update(categoryID, categoryModel)
+	return result
+}

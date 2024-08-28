@@ -21,8 +21,8 @@ func (h *Handler) ShopCategoryHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.Rou
 		category.GET("/", h.GetAll)
 		category.POST("/", h.Create)
 		category.GET("/:category", h.Get)
-		category.PUT("/:category", nil)
-		category.DELETE("/:category", nil)
+		category.PUT("/:category", h.Update)
+		category.DELETE("/:category", h.Delete)
 	}
 	
 	return category
