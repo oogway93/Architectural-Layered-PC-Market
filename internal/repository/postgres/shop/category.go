@@ -51,7 +51,7 @@ func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 	var resultCategories []map[string]interface{}
 	for _, category := range categories {
 		resultCategories = append(resultCategories, map[string]interface{}{
-			"categoryName": category.CategoryName,
+			"category_name": category.CategoryName,
 		})
 	}
 	tx.Commit()

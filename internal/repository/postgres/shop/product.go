@@ -21,49 +21,73 @@ func NewRepositoryProductShop(db *gorm.DB) *ProductShopPostgres {
 func (d *ProductShopPostgres) Create(categoryID string, newProduct models.Product) error {
 	tx := d.db.Begin()
 
-    var existingCategory models.Category
-    result := d.db.Where("category_name = ?", categoryID).First(&existingCategory)
+	var existingCategory models.Category
+	result := d.db.Where("category_name = ?", categoryID).First(&existingCategory)
 
-    if result.Error != nil {
-        log.Printf("Error finding category: %v", result.Error)
-        tx.Rollback()
-        return fmt.Errorf("failed to find category")
-    }
+	if result.Error != nil {
+		log.Printf("Error finding category: %v", result.Error)
+		tx.Rollback()
+		return fmt.Errorf("failed to find category")
+	}
 
-    // Check if category was found
-    if existingCategory.ID == 0 {
-        // If category doesn't exist, create it
-        newCategory := models.Category{
-            ID:         0, // Set to 0 to allow auto-increment
-            CategoryName:       categoryID,
-        }
-        result = d.db.Create(&newCategory)
-        if result.Error != nil {
-            log.Printf("Error creating new category: %v", result.Error)
-            tx.Rollback()
-            return fmt.Errorf("failed to create category")
-        }
-        existingCategory = newCategory
-    }
+	if existingCategory.ID == 0 {
+		newCategory := models.Category{
+			ID:           0,
+			CategoryName: categoryID,
+		}
+		result = d.db.Create(&newCategory)
+		if result.Error != nil {
+			log.Printf("Error creating new category: %v", result.Error)
+			tx.Rollback()
+			return fmt.Errorf("failed to create category")
+		}
+		existingCategory = newCategory
+	}
 
-    // Associate product with category
-    newProduct.CategoryID = existingCategory.ID
+	newProduct.CategoryID = existingCategory.ID
 
-    // Create new product
-    result = tx.Create(&newProduct)
-    if result.Error != nil {
-        log.Printf("Error creating new product: %v", result.Error)
-        tx.Rollback()
-        return fmt.Errorf("failed to create product")
-    }
+	result = tx.Create(&newProduct)
+	if result.Error != nil {
+		log.Printf("Error creating new product: %v", result.Error)
+		tx.Rollback()
+		return fmt.Errorf("failed to create product")
+	}
 
-    log.Printf("Created new product: %s in category: %s", newProduct.ProductName, existingCategory.CategoryName)
+	log.Printf("Created new product: %s in category: %s", newProduct.ProductName, existingCategory.CategoryName)
 
-    tx.Commit()
-    return nil
+	tx.Commit()
+	return nil
 }
 
-func (d *ProductShopPostgres) GetAll(categoryID string) []map[string]interface{} {return nil}
-func (d *ProductShopPostgres) Delete(categoryID string, productID string) error {return nil}
-func (d *ProductShopPostgres) Get(categoryID string, productID string) string {return "nil"}
-func (d *ProductShopPostgres) Update(categoryID string, productID string, newProduct models.Product) error {return nil}
+func (d *ProductShopPostgres) GetAll(categoryID string) []map[string]interface{} {
+	var products []models.Product
+	var category models.Category
+	tx := d.db.Begin()
+	getCategoryID := d.db.Where("category_name = ? AND deleted_at IS NULL", categoryID).First(&category)
+
+	if getCategoryID.Error != nil {
+		log.Printf("Error finding records from category: %v", getCategoryID.Error)
+	}
+
+	result := d.db.Where("category_id = ? AND deleted_at IS NULL", category.ID).Find(&products)
+	if result.Error != nil {
+		log.Printf("Error finding records from product: %v", result.Error)
+	}
+	var resultProducts []map[string]interface{}
+	for _, product := range products {
+		resultProducts = append(resultProducts, map[string]interface{}{
+			"description":   product.Description,
+			"price":         product.Price,
+			"product_name":  product.ProductName,
+			"category_name": category.CategoryName,
+			"uuid":          product.UUID,
+		})
+	}
+	tx.Commit()
+	return resultProducts
+}
+func (d *ProductShopPostgres) Delete(categoryID string, productID string) error { return nil }
+func (d *ProductShopPostgres) Get(categoryID string, productID string) string   { return "nil" }
+func (d *ProductShopPostgres) Update(categoryID string, productID string, newProduct models.Product) error {
+	return nil
+}

@@ -14,23 +14,6 @@ type User struct {
 	Password string `json:"password" gorm:"type:varchar(32)"`
 }
 
-// type Product struct {
-// 	gorm.Model
-// 	Id          uint            `json:"id" gorm:"unique;primaryKey;autoIncrement"`
-// 	UUID        uuid.UUID       `json:"uuid" gorm:"type:uuid;default:uuid_generate_v4()"`
-// 	ProductName string          `json:"product_name" gorm:"type:varchar(64);unique;not null"`
-// 	Price       decimal.Decimal `json:"price" gorm:"type:decimal(10, 2);not null"`
-// 	Description string          `json:"description" gorm:"type:text"`
-// 	CategoryID  uint            `json:"-" gorm:"index"`
-// 	Category    Category        `json:"category,omitempty" gorm:"foreignkey:CategoryID;references:CategoryID"`
-// }
-
-//	type Category struct {
-//		gorm.Model
-//		Id           uint      `json:"id" gorm:"unique;primaryKey;autoIncrement"`
-//		CategoryName string    `json:"category_name" gorm:"type:varchar(64);unique;not null"`
-//		Products     []Product `json:"products,omitempty" gorm:"polymorphic:Category"`
-//	}
 type Category struct {
 	gorm.Model
 	ID           uint      `json:"id" gorm:"unique;primaryKey;autoIncrement"`

@@ -18,7 +18,7 @@ func NewProductShopHandler(service *service.Service) *Handler {
 func (h *Handler) ShopProductHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.RouterGroup {
 	product := apiRoutes.Group("/categories/:category/products")
 	{
-		product.GET("/", nil)
+		product.GET("/", h.GetAll)
 		product.POST("/", h.Create)
 
 		product.GET("/:product", nil)
