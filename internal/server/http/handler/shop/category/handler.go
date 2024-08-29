@@ -46,7 +46,7 @@ func (h *Handler) Get(c *gin.Context) {
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",
-		Data:   gin.H{"category_name": result},
+		Data:   result,
 	}
 
 	c.Header("Content-Type", "application/json")

@@ -21,9 +21,9 @@ func (h *Handler) ShopProductHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.Rout
 		product.GET("/", h.GetAll)
 		product.POST("/", h.Create)
 
-		product.GET("/:product", nil)
-		product.PUT("/:product", nil)
-		product.DELETE("/:product", nil)
+		product.GET("/:product", h.Get)
+		product.PUT("/:product", h.Update)
+		product.DELETE("/:product", h.Delete)
 	}
 	
 	return product

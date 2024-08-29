@@ -32,7 +32,7 @@ func (c *ProductShopService) Delete(categoryID, productID string) error {
 	result := c.repositoryShopProduct.Delete(categoryID, productID)
 	return result 
 }
-func (c *ProductShopService) Get(categoryID, productID string) string {
+func (c *ProductShopService) Get(categoryID, productID string) map[string]interface{} {
 	result := c.repositoryShopProduct.Get(categoryID, productID)
 	return result
 }

@@ -27,7 +27,7 @@ func (c *CategoryShopService) GetAll() []map[string]interface{} {
 	result := c.repositoryShopCategory.GetAll()
 	return result
 }
-func (c *CategoryShopService) Get(categoryID string) string {
+func (c *CategoryShopService) Get(categoryID string) map[string]interface{} {
 	result := c.repositoryShopCategory.Get(categoryID)
 	return result
 }

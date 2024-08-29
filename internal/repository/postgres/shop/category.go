@@ -23,14 +23,14 @@ func (d *CategoryShopPostgres) Create(newCategory models.Category) {
 	categoryName := newCategory.CategoryName
 
 	var existingCategory models.Category
-	result := d.db.Unscoped().Where("category_name = ? AND deleted_at IS NOT NULL", categoryName).First(&existingCategory)
+	result := tx.Unscoped().Where("category_name = ? AND deleted_at IS NOT NULL", categoryName).First(&existingCategory)
 
 	if result.Error == nil {
 		rawSQL := `UPDATE categories SET deleted_at = NULL WHERE category_name = ?`
-		d.db.Exec(rawSQL, existingCategory.CategoryName)
+		tx.Exec(rawSQL, existingCategory.CategoryName)
 		log.Printf("Restored category: %s", categoryName)
 	} else {
-		result = d.db.Create(&newCategory)
+		result = tx.Create(&newCategory)
 		if result.Error != nil {
 			log.Printf("Error creating new category: %v", result.Error)
 		} else {
@@ -43,7 +43,7 @@ func (d *CategoryShopPostgres) Create(newCategory models.Category) {
 func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 	var categories []models.Category
 	tx := d.db.Begin()
-	result := d.db.Find(&categories)
+	result := tx.Find(&categories)
 
 	if result.Error != nil {
 		log.Printf("Error finding records from category: %v", result.Error)
@@ -61,7 +61,7 @@ func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 func (d *CategoryShopPostgres) Delete(categoryID string) error {
 	var category models.Category
 	tx := d.db.Begin()
-	result := d.db.Where("category_name = ?", categoryID).Delete(&category)
+	result := tx.Where("category_name = ?", categoryID).Delete(&category)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -69,25 +69,30 @@ func (d *CategoryShopPostgres) Delete(categoryID string) error {
 	return result.Error
 }
 
-func (d *CategoryShopPostgres) Get(categoryID string) string {
+func (d *CategoryShopPostgres) Get(categoryID string) map[string]interface{} {
 	var category models.Category
-	result := d.db.Where("category_name = ?", categoryID).First(&category)
+	tx := d.db.Begin()
+	result := tx.Where("category_name = ?", categoryID).First(&category)
 	if result.Error != nil {
 		log.Fatalf("Error repositrory: %v", result)
 	}
-	return category.CategoryName
+	resultCategory := map[string]interface{}{
+		"category_name": category.CategoryName,
+	}
+	tx.Commit()
+	return resultCategory
 }
 
 func (d *CategoryShopPostgres) Update(categoryID string, newCategory models.Category) error {
 	var category models.Category
 	tx := d.db.Begin()
-	result := d.db.Where("category_name = ? AND deleted_at IS NULL", categoryID).First(&category)
+	result := tx.Where("category_name = ? AND deleted_at IS NULL", categoryID).First(&category)
 	if result.Error != nil {
 		return result.Error
 	}
 	category.CategoryName = newCategory.CategoryName
 	category.UpdatedAt = time.Now()
-	result = d.db.Save(&category)
+	result = tx.Save(&category)
 	tx.Commit()
 	return result.Error
 }

@@ -12,7 +12,7 @@ import (
 type ServiceCategory interface {
 	Create(requestData *products.Category)
 	GetAll() []map[string]interface{}
-	Get(categoryID string) string
+	Get(categoryID string) map[string]interface{}
 	Update(categoryID string, requestData *products.Category) error
 	Delete(categoryID string) error
 }
@@ -20,7 +20,7 @@ type ServiceCategory interface {
 type ServiceProduct interface {
 	Create(categoryID string, requestData *products.Product)
 	GetAll(categoryID string) []map[string]interface{}
-	Get(categoryID string, productID string) string
+	Get(categoryID string, productID string) map[string]interface{}
 	Update(categoryID string, productID string, requestData *products.Product) error
 	Delete(categoryID string, productID string) error
 }

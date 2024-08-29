@@ -21,7 +21,7 @@ func NewRepositoryUser(db *gorm.DB) *UserPostgres {
 func (d *UserPostgres) Create(newUser models.User) {
 	tx := d.db.Begin()
 
-	result := d.db.Create(&newUser)	
+	result := tx.Create(&newUser)	
 
 	if result.Error != nil {
 		log.Printf("Error creating new user: %v", result.Error)
@@ -32,7 +32,7 @@ func (d *UserPostgres) Create(newUser models.User) {
 func (d *UserPostgres) GetAll() []map[string]interface{} {
 	var users []models.User
 	tx := d.db.Begin()
-	result := d.db.Find(&users)
+	result := tx.Find(&users)
 
 	if result.Error != nil {
 		log.Printf("Error finding records from user: %v", result.Error)
@@ -50,7 +50,7 @@ func (d *UserPostgres) GetAll() []map[string]interface{} {
 func (d *UserPostgres) Update(loginID string, newUser models.User) (error){
 	var user models.User
 	tx := d.db.Begin()
-	result := d.db.Where("login = ?", loginID).First(&user)
+	result := tx.Where("login = ?", loginID).First(&user)
     if result.Error != nil {
         return result.Error
     }
@@ -58,7 +58,7 @@ func (d *UserPostgres) Update(loginID string, newUser models.User) (error){
     user.Password = newUser.Password
 	user.UpdatedAt = time.Now()
 
-    result = d.db.Save(&user)
+    result = tx.Save(&user)
 	tx.Commit()
     return result.Error
 }
@@ -66,7 +66,7 @@ func (d *UserPostgres) Update(loginID string, newUser models.User) (error){
 func (d *UserPostgres) Delete(loginID string) error {
 	var user models.User
 	tx := d.db.Begin()
-	result := d.db.Where("login = ?", loginID).Delete(&user)
+	result := tx.Where("login = ?", loginID).Delete(&user)
 	if result.Error != nil {
         return result.Error
     }

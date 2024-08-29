@@ -47,11 +47,11 @@ func (h *Handler) GetAll(c *gin.Context) {
 func (h *Handler) Get(c *gin.Context) {
 	categoryID := c.Param("category")
 	productID := c.Param("product")
-	result := h.service.ServiceProduct.Get(productID, categoryID)
+	result := h.service.ServiceProduct.Get(categoryID, productID)
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",
-		Data:   gin.H{"category_name": result},
+		Data:   result,
 	}
 
 	c.Header("Content-Type", "application/json")
