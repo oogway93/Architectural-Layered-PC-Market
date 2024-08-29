@@ -36,7 +36,7 @@ func (c *CategoryShopService) Delete(categoryID string) error {
 	result := c.repositoryShopCategory.Delete(categoryID)
 	return result
 }
-func (c *CategoryShopService) Update(categoryID string, requestData products.Category) error {
+func (c *CategoryShopService) Update(categoryID string, requestData *products.Category) error {
 	categoryModel := models.Category{
 		CategoryName: requestData.CategoryName,
 	}

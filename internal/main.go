@@ -29,9 +29,10 @@ func main() {
 		DBName:   os.Getenv("DB_NAME"),
 		SSLMode:  os.Getenv("DB_SSLMode"),
 	})
-	db.Table("users").AutoMigrate(&models.User{})
-	db.Table("categories").AutoMigrate(&models.Category{})
-	db.Table("product").AutoMigrate(&models.Product{})
+	// db.Table("users").AutoMigrate(&models.User{})
+	// db.Table("categories").AutoMigrate(&models.Category{})
+	// db.Table("products").AutoMigrate(&models.Product{})
+    db.AutoMigrate(&models.User{}, &models.Category{}, &models.Product{})
 
 	repo := repositoryPostgres.NewRepository(db)
 	service := service.NewService(repo)

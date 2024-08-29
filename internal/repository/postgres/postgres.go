@@ -34,6 +34,7 @@ func DatabaseConnection(cfg Config) *gorm.DB {
 
 func NewRepository(db *gorm.DB) *repository.Repository {
 	return &repository.Repository{
+		ProductRepository: repositoryPostgresShop.NewRepositoryProductShop(db),
 		CategoryRepository: repositoryPostgresShop.NewRepositoryCategoryShop(db),
 		UserRepository: repositoryPostgresUser.NewRepositoryUser(db),
 	}

@@ -73,7 +73,7 @@ func (h *Handler) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON payload"})
 		return
 	}
-	h.service.ServiceCategory.Update(categoryID, newCategory)
+	h.service.ServiceCategory.Update(categoryID, &newCategory)
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Category UPDATED successfully",
 	})

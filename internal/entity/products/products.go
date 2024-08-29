@@ -1,7 +1,13 @@
 package products
 
-type ProductList struct {
-	Name string `json:"name"`
-	Description string `json:"description"`
-	Price int64 `json:"price"`
+import (
+	"github.com/shopspring/decimal"
+)
+
+type Product struct {
+	// UUID        uuid.UUID       `json:"uuid"`
+	ProductName string          `json:"product_name"`
+	Price       decimal.Decimal `json:"price"`
+	Description string          `json:"description"`
+	// CategoryRel Category        `json:"category_name"`
 }

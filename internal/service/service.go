@@ -11,10 +11,18 @@ import (
 
 type ServiceCategory interface {
 	Create(requestData *products.Category)
-	Get(categoryID string) string
 	GetAll() []map[string]interface{}
+	Get(categoryID string) string
+	Update(categoryID string, requestData *products.Category) error
 	Delete(categoryID string) error
-	Update(categoryID string, requestData products.Category) error
+}
+
+type ServiceProduct interface {
+	Create(categoryID string, requestData *products.Product)
+	GetAll(categoryID string) []map[string]interface{}
+	Get(categoryID string, productID string) string
+	Update(categoryID string, productID string, requestData *products.Product) error
+	Delete(categoryID string, productID string) error
 }
 
 type ServiceUser interface {
@@ -26,12 +34,14 @@ type ServiceUser interface {
 
 type Service struct {
 	ServiceCategory ServiceCategory
+	ServiceProduct  ServiceProduct
 	ServiceUser     ServiceUser
 }
 
 func NewService(repo *repository.Repository) *Service {
 	return &Service{
 		ServiceCategory: serviceShop.NewServiceShopCategory(repo.CategoryRepository),
+		ServiceProduct:  serviceShop.NewServiceShopProduct(repo.ProductRepository),
 		ServiceUser:     serviceUser.NewServiceUser(repo.UserRepository),
 	}
 }

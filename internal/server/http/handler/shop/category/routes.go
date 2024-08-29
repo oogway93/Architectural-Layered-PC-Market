@@ -16,7 +16,7 @@ func NewCategoryShopHandler(service *service.Service) *Handler {
 }
 
 func (h *Handler) ShopCategoryHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.RouterGroup {
-	category := apiRoutes.Group("/category")
+	category := apiRoutes.Group("/categories")
 	{
 		category.GET("/", h.GetAll)
 		category.POST("/", h.Create)

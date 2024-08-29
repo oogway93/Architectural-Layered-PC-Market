@@ -4,15 +4,15 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
 )
 
-type CategoryRepository interface {
-	Create(requestData models.Product)
-	GetAll() []map[string]interface{}
+type ProductRepository interface {
+	Create(categoryID string, requestData models.Product) (error)
+	GetAll(categoryID string) []map[string]interface{}
 	Delete(categoryID string, productID string) error
 	Get(categoryID string, productID string) string
 	Update(categoryID string, productID string, newCategory models.Product) error
 }
 
-type ProductRepository interface {
+type CategoryRepository interface {
 	Create(requestData models.Category)
 	GetAll() []map[string]interface{}
 	Delete(categoryID string) error
