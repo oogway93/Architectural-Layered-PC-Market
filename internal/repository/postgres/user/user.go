@@ -21,7 +21,7 @@ func NewRepositoryUser(db *gorm.DB) *UserPostgres {
 func (d *UserPostgres) Create(newUser models.User) {
 	tx := d.db.Begin()
 
-	result := tx.Create(&newUser)	
+	result := tx.Create(&newUser)
 
 	if result.Error != nil {
 		log.Printf("Error creating new user: %v", result.Error)
@@ -42,25 +42,43 @@ func (d *UserPostgres) GetAll() []map[string]interface{} {
 		resultUsers = append(resultUsers, map[string]interface{}{
 			"username": user.Username,
 			"password": user.Password})
-		}
+	}
 	tx.Commit()
 	return resultUsers
 }
 
-func (d *UserPostgres) Update(loginID string, newUser models.User) (error){
+func (d *UserPostgres) Get(loginID string) map[string]interface{} {
 	var user models.User
 	tx := d.db.Begin()
 	result := tx.Where("login = ?", loginID).First(&user)
-    if result.Error != nil {
-        return result.Error
-    }
+	if result.Error != nil {
+		log.Printf("Error finding LOGIN from user: %v", result.Error)
+		return nil
+	}
+
+	resultUser := map[string]interface{}{
+		"id":    user.ID,
+		"login": user.Login,
+	}
+
+	tx.Commit()
+	return resultUser
+}
+
+func (d *UserPostgres) Update(loginID string, newUser models.User) error {
+	var user models.User
+	tx := d.db.Begin()
+	result := tx.Where("login = ?", loginID).First(&user)
+	if result.Error != nil {
+		return result.Error
+	}
 	user.Username = newUser.Username
-    user.Password = newUser.Password
+	user.Password = newUser.Password
 	user.UpdatedAt = time.Now()
 
-    result = tx.Save(&user)
+	result = tx.Save(&user)
 	tx.Commit()
-    return result.Error
+	return result.Error
 }
 
 func (d *UserPostgres) Delete(loginID string) error {
@@ -68,8 +86,8 @@ func (d *UserPostgres) Delete(loginID string) error {
 	tx := d.db.Begin()
 	result := tx.Where("login = ?", loginID).Delete(&user)
 	if result.Error != nil {
-        return result.Error
-    }
+		return result.Error
+	}
 	tx.Commit()
 	return result.Error
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/oogway93/golangArchitecture/internal/repository"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/shop"
+	repositoryPostgresAuth "github.com/oogway93/golangArchitecture/internal/repository/postgres/auth"
 	repositoryPostgresUser "github.com/oogway93/golangArchitecture/internal/repository/postgres/user"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -37,5 +38,6 @@ func NewRepository(db *gorm.DB) *repository.Repository {
 		ProductRepository: repositoryPostgresShop.NewRepositoryProductShop(db),
 		CategoryRepository: repositoryPostgresShop.NewRepositoryCategoryShop(db),
 		UserRepository: repositoryPostgresUser.NewRepositoryUser(db),
+		AuthRepository: repositoryPostgresAuth.NewRepositoryAuth(db),
 	}
 }

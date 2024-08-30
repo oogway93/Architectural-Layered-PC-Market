@@ -1,12 +1,12 @@
 package service
 
 import (
-	// "github.com/oogway93/golangArchitecture/internal/entity/products"
 	"github.com/oogway93/golangArchitecture/internal/entity/products"
 	"github.com/oogway93/golangArchitecture/internal/entity/user"
 	"github.com/oogway93/golangArchitecture/internal/repository"
+	serviceAuth "github.com/oogway93/golangArchitecture/internal/service/auth"
 	"github.com/oogway93/golangArchitecture/internal/service/shop"
-	serviceUser "github.com/oogway93/golangArchitecture/internal/service/user"
+	"github.com/oogway93/golangArchitecture/internal/service/user"
 )
 
 type ServiceCategory interface {
@@ -27,14 +27,18 @@ type ServiceProduct interface {
 type ServiceUser interface {
 	Create(requestData *user.User)
 	GetAll() []map[string]interface{}
+	Get(login string) map[string]interface{}
 	Update(loginID string, requestData *user.UserUpdated) error
 	Delete(loginID string) error
 }
-
+type ServiceAuth interface {
+	Login(requestData *user.AuthInput) bool
+}
 type Service struct {
 	ServiceCategory ServiceCategory
 	ServiceProduct  ServiceProduct
 	ServiceUser     ServiceUser
+	ServiceAuth     ServiceAuth
 }
 
 func NewService(repo *repository.Repository) *Service {
@@ -42,5 +46,6 @@ func NewService(repo *repository.Repository) *Service {
 		ServiceCategory: serviceShop.NewServiceShopCategory(repo.CategoryRepository),
 		ServiceProduct:  serviceShop.NewServiceShopProduct(repo.ProductRepository),
 		ServiceUser:     serviceUser.NewServiceUser(repo.UserRepository),
+		ServiceAuth:     serviceAuth.NewServiceAuth(repo.AuthRepository),
 	}
 }

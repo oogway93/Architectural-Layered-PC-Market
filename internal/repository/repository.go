@@ -5,7 +5,7 @@ import (
 )
 
 type ProductRepository interface {
-	Create(categoryID string, requestData models.Product) (error)
+	Create(categoryID string, requestData models.Product) error
 	GetAll(categoryID string) []map[string]interface{}
 	Delete(categoryID string, productID string) error
 	Get(categoryID string, productID string) map[string]interface{}
@@ -23,12 +23,18 @@ type CategoryRepository interface {
 type UserRepository interface {
 	Create(newUser models.User)
 	GetAll() []map[string]interface{}
+	Get(loginID string) map[string]interface{}
 	Update(loginID string, newUser models.User) error
 	Delete(loginID string) error
+}
+
+type AuthRepository interface {
+	Login(loginID string) map[string]interface{}
 }
 
 type Repository struct {
 	CategoryRepository CategoryRepository
 	UserRepository     UserRepository
 	ProductRepository  ProductRepository
+	AuthRepository     AuthRepository
 }

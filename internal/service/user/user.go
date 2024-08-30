@@ -4,6 +4,7 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/entity/user"
 	"github.com/oogway93/golangArchitecture/internal/repository"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
+	"github.com/oogway93/golangArchitecture/internal/utils"
 )
 
 type UserService struct {
@@ -17,10 +18,11 @@ func NewServiceUser(repo repository.UserRepository) *UserService {
 }
 
 func (c *UserService) Create(requestData *user.User) {
+	hashPassword := utils.HashPassword(requestData.Password)
 	userModel := models.User{
 		Login:    requestData.Login,
 		Username: requestData.Username,
-		Password: requestData.Password,
+		Password: hashPassword,
 	}
 	c.repositoryUser.Create(userModel)
 }
@@ -31,9 +33,10 @@ func (c *UserService) GetAll() []map[string]interface{} {
 }
 
 func (c *UserService) Update(loginId string, requestData *user.UserUpdated) error {
+	hashPassword := utils.HashPassword(requestData.Password)
 	userModel := models.User{
 		Username: requestData.Username,
-		Password: requestData.Password,
+		Password: hashPassword,
 	}
 	status := c.repositoryUser.Update(loginId, userModel)
 	return status
@@ -41,5 +44,9 @@ func (c *UserService) Update(loginId string, requestData *user.UserUpdated) erro
 
 func (c *UserService) Delete(loginID string) error {
 	result := c.repositoryUser.Delete(loginID)
+	return result
+}
+func (c *UserService) Get(login string) map[string]interface{} {
+	result := c.repositoryUser.Get(login)
 	return result
 }

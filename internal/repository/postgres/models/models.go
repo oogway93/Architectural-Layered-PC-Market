@@ -8,10 +8,10 @@ import (
 
 type User struct {
 	gorm.Model
-	Id       uint   `json:"id" gorm:"unique;primaryKey;autoIncrement"`
+	ID       uint   `json:"id" gorm:"unique;primaryKey;autoIncrement"`
 	Login    string `json:"login" gorm:"type:varchar(32);unique;not null"`
 	Username string `json:"username" gorm:"type:varchar(32)"`
-	Password string `json:"password" gorm:"type:varchar(32)"`
+	Password string `json:"password" gorm:"type:varchar(100)"`
 }
 
 type Category struct {
@@ -22,7 +22,6 @@ type Category struct {
 	// Products     []Product `json:"products,omitempty" gorm:"polymorphic:Category"`
 }
 
-// models/product.go
 type Product struct {
 	gorm.Model
 	ID          uint            `json:"id" gorm:"unique;primaryKey;autoIncrement"`

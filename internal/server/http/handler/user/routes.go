@@ -15,8 +15,8 @@ func NewUserHandler(service *service.Service) *Handler {
 	}
 }
 
-func (h *Handler) UserHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.RouterGroup {
-	user := apiRoutes.Group("/user")
+func (h *Handler) UserHandlerRoutes(router *gin.Engine) *gin.RouterGroup {
+	user := router.Group("/user")
 	{
 		user.GET("/", h.GetAll)
 		user.POST("/", h.Create)
