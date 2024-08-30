@@ -9,7 +9,7 @@ type ProductRepository interface {
 	GetAll(categoryID string) []map[string]interface{}
 	Delete(categoryID string, productID string) error
 	Get(categoryID string, productID string) map[string]interface{}
-	Update(categoryID string, productID string, newCategory models.Product) error
+	Update(newCategoryName string, productID string, newProduct models.Product) error
 }
 
 type CategoryRepository interface {

@@ -1,6 +1,7 @@
 package handlerShopProduct
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -80,7 +81,10 @@ func (h *Handler) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON payload"})
 		return
 	}
-	h.service.ServiceProduct.Update(categoryID, productID, &newProduct)
+	err = h.service.ServiceProduct.Update(categoryID, productID, &newProduct)
+	if err != nil {
+		log.Fatalf("Errors in Update handler: %v", err.Error())
+	}
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Category UPDATED successfully",
 	})

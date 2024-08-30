@@ -3,8 +3,10 @@ package repositoryPostgresShop
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
@@ -37,22 +39,7 @@ func (d *ProductShopPostgres) Create(categoryID string, newProduct models.Produc
 			return fmt.Errorf("failed to find category")
 		}
 
-		// if existingCategory.ID == 0 {
-		// 	newCategory := models.Category{
-		// 		ID:           0,
-		// 		CategoryName: categoryID,
-		// 	}
-		// 	result = tx.Create(&newCategory)
-		// 	if result.Error != nil {
-		// 		log.Printf("Error creating new category: %v", result.Error)
-		// 		tx.Rollback()
-		// 		return fmt.Errorf("failed to create category")
-		// 	}
-		// 	existingCategory = newCategory
-		// }
-
 		newProduct.CategoryID = existingCategory.ID
-
 		result = tx.Create(&newProduct)
 		if result.Error != nil {
 			log.Printf("Error creating new product: %v", result.Error)
@@ -100,7 +87,7 @@ func (d *ProductShopPostgres) Delete(categoryID string, productID string) error 
 	// var category models.Category
 	tx := d.db.Begin()
 
-	// getCategoryID := tx.Where("category_name = ? AND deleted_at IS NULL", categoryID).First(&category)
+	// getCategoryID := tx.Where("category_name = ? A ND deleted_at IS NULL", categoryID).First(&category)
 
 	// if getCategoryID.Error != nil {
 	// 	log.Printf("Error finding records from category: %v", getCategoryID.Error)
@@ -138,6 +125,35 @@ func (d *ProductShopPostgres) Get(categoryID string, productID string) map[strin
 	tx.Commit()
 	return resultProduct
 }
-func (d *ProductShopPostgres) Update(categoryID string, productID string, newProduct models.Product) error {
-	return nil
+func (d *ProductShopPostgres) Update(newCategoryName, productID string, newProduct models.Product) error {
+	var product models.Product
+	var category models.Category
+	tx := d.db.Begin()
+	
+	result := tx.Where("product_name = ? AND deleted_at IS NULL", productID).First(&product)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if newCategoryName != "" {
+		getCategory := tx.Where("category_name = ? AND deleted_at IS NULL", newCategoryName).First(&category)
+		
+		if getCategory.Error != nil {
+			log.Printf("Error finding records from category: %v", getCategory.Error)
+		}
+		product.CategoryID = category.ID
+	}
+	if newProduct.ProductName != "" {
+		product.ProductName = newProduct.ProductName
+	}
+	if newProduct.Price.Cmp(decimal.NewFromInt(0)) > 0 {
+		product.Price = newProduct.Price
+	}
+	if newProduct.Description != "" {
+		product.Description = newProduct.Description
+	}
+	product.UpdatedAt = time.Now()
+	result = tx.Save(&product)
+	tx.Commit()
+	return result.Error
 }

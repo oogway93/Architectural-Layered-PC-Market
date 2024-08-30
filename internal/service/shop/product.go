@@ -42,6 +42,7 @@ func (c *ProductShopService) Update(categoryID, productID string, requestData *p
 		Price:       requestData.Price,
 		Description: requestData.Description,
 	}
-	result := c.repositoryShopProduct.Update(categoryID, productID, productModel)
+	newCategoryName := requestData.CategoryRel.CategoryName
+	result := c.repositoryShopProduct.Update(newCategoryName, productID, productModel)
 	return result
 }

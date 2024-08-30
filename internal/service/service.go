@@ -22,9 +22,8 @@ type ServiceProduct interface {
 	GetAll(categoryID string) []map[string]interface{}
 	Get(categoryID string, productID string) map[string]interface{}
 	Update(categoryID string, productID string, requestData *products.Product) error
-	Delete(categoryID string, productID string) error
+	Delete(categoryID, productID string) error
 }
-
 type ServiceUser interface {
 	Create(requestData *user.User)
 	GetAll() []map[string]interface{}
