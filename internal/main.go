@@ -21,7 +21,7 @@ func main() {
 	}
 	PORT := os.Getenv("PORT")
 	DB_PORT, _ := strconv.Atoi(os.Getenv("DB_PORT"))
-	db:= repositoryPostgres.DatabaseConnection(repositoryPostgres.Config{
+	db := repositoryPostgres.DatabaseConnection(repositoryPostgres.Config{
 		Username: os.Getenv("DB_USERNAME"),
 		Password: os.Getenv("DB_PASSWORD"),
 		Host:     os.Getenv("DB_HOST"),
@@ -29,8 +29,8 @@ func main() {
 		DBName:   os.Getenv("DB_NAME"),
 		SSLMode:  os.Getenv("DB_SSLMode"),
 	})
-	
-    db.AutoMigrate(&models.User{}, &models.Category{}, &models.Product{})
+
+	db.AutoMigrate(&models.User{}, &models.Category{}, &models.Product{}, &models.Order{}, &models.Delivery{}, &models.OrderItem{})
 
 	repo := repositoryPostgres.NewRepository(db)
 	service := service.NewService(repo)
