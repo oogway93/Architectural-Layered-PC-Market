@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
@@ -32,6 +33,14 @@ func (d *OrderShopPostgres) CreateOrderAndOrderItems(userID string, deliveryID u
 		Status:     "in_process",
 	}
 
+	var total decimal.Decimal
+	for _, item := range newItems {
+		quantityInt64 := int64(item.Quantity)
+		total = total.Add(item.UnitPrice.Mul(decimal.NewFromInt(quantityInt64)))
+		// result := tx.Create(&item)
+	}
+	
+	newOrder.Total = total
 	result = tx.Create(&newOrder)
 	if result.Error != nil {
 		log.Printf("Error creating new category: %v", result.Error)
@@ -50,11 +59,11 @@ func (d *OrderShopPostgres) CreateOrderAndOrderItems(userID string, deliveryID u
 			log.Printf("Created new order items")
 		}
 	}
+	
 
 	tx.Commit()
 }
 
-// FIXME: создает две записи(видимо сколько в список добавляешь предметов для заказа, столько он и сохраняет одинаковых записей в бд о доставке)
 func (d *OrderShopPostgres) CreateDelivery(newDelivery *models.Delivery) {
 	tx := d.db.Begin()
 
