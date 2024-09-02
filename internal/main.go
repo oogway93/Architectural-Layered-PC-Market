@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 	repositoryPostgres "github.com/oogway93/golangArchitecture/internal/repository/postgres"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
-	HTTP "github.com/oogway93/golangArchitecture/internal/server/http"
+	HTTP "github.com/oogway93/golangArchitecture/internal/server/serverHTTP"
 
 	"github.com/oogway93/golangArchitecture/internal/service"
 )

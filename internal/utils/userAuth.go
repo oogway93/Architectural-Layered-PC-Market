@@ -5,24 +5,26 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type tokenClaims struct {
 	jwt.StandardClaims
-	Login string
+	Login string `json:"login"`
+    Id    uint   `json:"id"`
 }
 
 func HashPassword(password string) string {
-	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
 		log.Fatalf("Error in HASHING password: %v", err)
 	}
 	return string(hashPassword)
 }
 
-func CheckHashPassword(hashedPassword , password string) bool {
+func CheckHashPassword(hashedPassword, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
 		log.Fatalf("Error in UNHASHING password: %v", err)
@@ -49,4 +51,20 @@ func ParseToken(accessToken string) (string, error) {
 	}
 
 	return claims.Login, nil
+}
+
+// FIXME: сделать тут так, чтобы можно было получать из jwt токена id юзера, ибо почему то только логин отображается в data. 
+func GetUserID(c *gin.Context) (string, error) {
+	id, ok := c.Get("currentUserLogin")
+	log.Printf("login ept: %s", id)
+	if !ok {
+		return "", errors.New("cannot get user's id")
+	}
+
+	idInt, ok := id.(string)
+	if !ok {
+		return "", errors.New("id is of invalid type")
+	}
+
+	return idInt, nil
 }

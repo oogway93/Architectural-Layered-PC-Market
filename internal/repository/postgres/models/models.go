@@ -19,7 +19,6 @@ type Category struct {
 	ID           uint      `json:"id" gorm:"unique;primaryKey;autoIncrement"`
 	CategoryName string    `json:"category_name" gorm:"type:varchar(64);unique;not null"`
 	Products     []Product `json:"products" gorm:"foreignKey:CategoryID"`
-	// Products     []Product `json:"products,omitempty" gorm:"polymorphic:Category"`
 }
 
 type Product struct {
@@ -35,24 +34,15 @@ type Product struct {
 
 type Order struct {
 	gorm.Model
-	// UUID        uuid.UUID       `json:"uuid" gorm:"type:uuid;default:gen_random_uuid();index"`
 	ID         uint            `json:"id" gorm:"unique;primaryKey;autoIncrement"`
 	UserID     uint            `json:"userId" gorm:"index"`
-	Status     string          `json:"status" gorm:"type:varchar(20);not null;default:'pending'" validate:"oneof=pending shipped delivered cancelled"`
+	Status     string          `gorm:"type:varchar(20);not null;default:'pending'" validate:"oneof=pending in_process shipped delivered cancelled"`
 	Total      decimal.Decimal `json:"total" gorm:"type:decimal(10, 2)"`
-	CategoryID uint            `json:"categoryId" gorm:"foreignKey:CategoryID"`
-	DeliveryID uint            `json:"deliveryId" gorm:"foreignKey:DeliveryID"`
+	DeliveryID uint            `json:"deliveryId" gorm:"index"`
 
-	OrderItems []OrderItem `json:"order_items,omitempty" gorm:"foreignKey:OrderID"`
-	User       User        `json:"-" gorm:"foreignKey:UserID"`
-}
-
-type Delivery struct {
-	gorm.Model
-	ID            uint            `json:"id" gorm:"unique;primaryKey;autoIncrement"`
-	Country       string          `json:"country" gorm:"type:varchar(64)"`
-	City          string          `json:"city" gorm:"type:varchar(64)"`
-	DeliveryPrice decimal.Decimal `json:"delivery_price" gorm:"type:decimal(10, 2)"`
+	OrderItems []OrderItem    `json:"order_items" gorm:"foreignKey:OrderID"`
+	User       User           `gorm:"foreignKey:UserID"`
+	Delivery   Delivery       `gorm:"foreignKey:DeliveryID"`
 }
 
 type OrderItem struct {
@@ -61,8 +51,18 @@ type OrderItem struct {
 	OrderID   uint    `json:"orderId" gorm:"index"`
 	ProductID uint    `json:"productId" gorm:"index"`
 	Quantity  int     `json:"quantity" gorm:"not null"`
-	UnitPrice float64 `json:"unit_price" gorm:"not null"`
+	UnitPrice decimal.Decimal `json:"unit_price" gorm:"type:decimal(10, 2)"`
 
-	Order   Order   `json:"-" gorm:"foreignKey:OrderID"`
-	Product Product `json:"-" gorm:"foreignKey:ProductID"`
+	Order   Order   `gorm:"foreignKey:OrderID"`
+	Product Product `gorm:"foreignKey:ProductID"`
+}
+
+type Delivery struct {
+	gorm.Model
+	ID            uint            `json:"id" gorm:"unique;primaryKey;autoIncrement"`
+	FullName      string          `json:"full_name" gorm:"type varchar(64)"`
+	Postcode      string          `json:"postcode" gorm:"type varchar(64)"`
+	Country       string          `json:"country" gorm:"type:varchar(64)"`
+	City          string          `json:"city" gorm:"type:varchar(64)"`
+	DeliveryPrice decimal.Decimal `json:"delivery_price" gorm:"type:decimal(10, 2)"`
 }

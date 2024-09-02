@@ -42,7 +42,9 @@ func (d *CategoryShopPostgres) Create(newCategory models.Category) {
 
 func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 	var categories []models.Category
+	var products []models.Product
 	tx := d.db.Begin()
+
 	result := tx.Find(&categories)
 
 	if result.Error != nil {
@@ -50,8 +52,24 @@ func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 	}
 	var resultCategories []map[string]interface{}
 	for _, category := range categories {
+		result := tx.Where("category_id = ? AND deleted_at IS NULL", category.ID).Find(&products)
+		if result.Error != nil {
+			log.Printf("Error finding records from product: %v", result.Error)
+		}
+
+		var resultProducts []map[string]interface{}
+		for _, product := range products {
+			resultProducts = append(resultProducts, map[string]interface{}{
+				"description":  product.Description,
+				"price":        product.Price,
+				"product_name": product.ProductName,
+				"uuid":         product.UUID,
+			})
+		}
+		//////////////////////////////////
 		resultCategories = append(resultCategories, map[string]interface{}{
 			"category_name": category.CategoryName,
+			"products":      resultProducts,
 		})
 	}
 	tx.Commit()
@@ -71,13 +89,30 @@ func (d *CategoryShopPostgres) Delete(categoryID string) error {
 
 func (d *CategoryShopPostgres) Get(categoryID string) map[string]interface{} {
 	var category models.Category
+	var products []models.Product
 	tx := d.db.Begin()
 	result := tx.Where("category_name = ?", categoryID).First(&category)
 	if result.Error != nil {
-		log.Fatalf("Error repositrory: %v", result)
+		log.Fatalf("Error finding by category_name: %v", result)
+	}
+
+	res := tx.Where("category_id = ?", category.ID).First(&products)
+	if res.Error != nil {
+		log.Fatalf("Error finding PRODUCTS which making relationships with CategoryID by category_name: %v", res)
+	}
+
+	var resultProducts []map[string]interface{}
+	for _, product := range products {
+		resultProducts = append(resultProducts, map[string]interface{}{
+			"description":  product.Description,
+			"price":        product.Price,
+			"product_name": product.ProductName,
+			"uuid":         product.UUID,
+		})
 	}
 	resultCategory := map[string]interface{}{
 		"category_name": category.CategoryName,
+		"products":      resultProducts,
 	}
 	tx.Commit()
 	return resultCategory

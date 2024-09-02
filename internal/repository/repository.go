@@ -20,6 +20,17 @@ type CategoryRepository interface {
 	Update(categoryID string, newCategory models.Category) error
 }
 
+type OrderRepository interface {
+	CreateOrderAndOrderItems(userID string, deliveryID uint, newItems []*models.OrderItem)
+	CreateDelivery(newDelivery *models.Delivery)
+	GetAll()
+	Get()
+	Update()
+	Delete()
+	FetchProductID(productName string) map[string]interface{}
+	LastRow() (uint, error)
+}
+
 type UserRepository interface {
 	Create(newUser models.User)
 	GetAll() []map[string]interface{}
@@ -33,8 +44,9 @@ type AuthRepository interface {
 }
 
 type Repository struct {
-	CategoryRepository CategoryRepository
-	UserRepository     UserRepository
 	ProductRepository  ProductRepository
+	CategoryRepository CategoryRepository
+	OrderRepository    OrderRepository
+	UserRepository     UserRepository
 	AuthRepository     AuthRepository
 }

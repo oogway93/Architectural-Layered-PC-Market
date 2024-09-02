@@ -1,4 +1,4 @@
-package HTTP
+package serverHTTP
 
 import (
 	"fmt"
@@ -12,7 +12,6 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/service"
 )
 
-
 type Handler struct {
 	service *service.Service
 }
@@ -22,20 +21,6 @@ func NewMiddlewareHandler(service *service.Service) *Handler {
 		service: service,
 	}
 }
-
-// func GetUserId(c *gin.Context) (int, error) {
-// 	id, ok := c.Get("userId")
-// 	if !ok {
-// 		return 0, errors.New("Cannot get user's ID")
-// 	}
-
-// 	idInt, ok := id.(int)
-// 	if !ok {
-// 		return 0, errors.New("id is of invalid type")
-// 	}
-
-// 	return idInt, nil
-// }	
 
 // FIXME: сделать как-нибудь, чтоб можно было проверить через бд есть ли такой логин,
 // иначе опрокинуть ошибку. Проблема просто в том, что как создать структуру Handler, из которой буду вызывать сервис->репозиторий.
@@ -75,6 +60,20 @@ func UserIdentity(c *gin.Context) {
 		return
 	}
 
+	// userId, ok := claims["id"].(uint)
+	// if !ok {
+	// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user ID in token"})
+	// 	c.AbortWithStatus(http.StatusUnauthorized)
+	// 	return
+	// }
+
+	userLogin, ok := claims["login"].(string)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid login in token"})
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
 	if float64(time.Now().Unix()) > claims["expiration"].(float64) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "token expired"})
 		c.AbortWithStatus(http.StatusUnauthorized)
@@ -89,7 +88,8 @@ func UserIdentity(c *gin.Context) {
 	// 	return
 	// }
 
-	c.Set("currentUser", claims["login"])
+	// c.Set("currentUserID", userId)
+	c.Set("currentUserLogin", userLogin)
 
 	c.Next()
 }

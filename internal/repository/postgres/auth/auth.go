@@ -21,7 +21,7 @@ func (d *AuthPostgres) Login(loginID string) map[string]interface{} {
 	var user models.User
 	tx := d.db.Begin()
 
-	result := d.db.Where("login = ? AND deleted_at IS NULL", loginID).First(&user)
+	result := tx.Where("login = ? AND deleted_at IS NULL", loginID).First(&user)
 	if result.Error != nil {
 		log.Printf("Error finding CERTAIN LOGIN from user table: %v", result.Error)
 	}

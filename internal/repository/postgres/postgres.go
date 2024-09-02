@@ -22,7 +22,6 @@ type Config struct {
 }
 
 func DatabaseConnection(cfg Config) *gorm.DB {
-
 	sqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", cfg.Host, cfg.Port, cfg.Username, cfg.Password, cfg.DBName, cfg.SSLMode)
 
 	db, err := gorm.Open(postgres.Open(sqlInfo), &gorm.Config{})
@@ -37,6 +36,7 @@ func NewRepository(db *gorm.DB) *repository.Repository {
 	return &repository.Repository{
 		ProductRepository: repositoryPostgresShop.NewRepositoryProductShop(db),
 		CategoryRepository: repositoryPostgresShop.NewRepositoryCategoryShop(db),
+		OrderRepository: repositoryPostgresShop.NewRepositoryOrderShop(db),
 		UserRepository: repositoryPostgresUser.NewRepositoryUser(db),
 		AuthRepository: repositoryPostgresAuth.NewRepositoryAuth(db),
 	}
