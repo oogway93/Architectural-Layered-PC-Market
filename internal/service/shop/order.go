@@ -32,16 +32,22 @@ func (c *OrderShopService) Create(userID string, requestData *products.Order) {
 	for _, productItem := range requestData.OrderItemsRel {
 		resultProduct := c.repositoryShopOrder.FetchProductID(productItem.ProductRel.ProductName)
 		unitPrice, ok := resultProduct["price"].(decimal.Decimal)
-		if ok {
-			orderItem := models.OrderItem{
-				ProductID: resultProduct["id"].(uint),
-				Quantity:  productItem.Quantity,
-				UnitPrice: unitPrice,
-			}
-			orderItems = append(orderItems, &orderItem)
+		if !ok {
+            log.Printf("Failed to convert price to decimal for product %s", productItem.ProductRel.ProductName)
+            continue
+        }
+		orderItem := models.OrderItem{
+			ProductID: resultProduct["id"].(uint),
+			Quantity:  productItem.Quantity,
+			UnitPrice: unitPrice,
 		}
+		orderItems = append(orderItems, &orderItem)
+		
 	}
-
+	if len(orderItems) == 0 {
+        log.Println("No order items found")
+        return
+    }
 	// orderModel.OrderItems = orderItems
 
 	c.repositoryShopOrder.CreateDelivery(&deliveryModel)
@@ -55,7 +61,10 @@ func (c *OrderShopService) Create(userID string, requestData *products.Order) {
 
 }
 
-func (s *OrderShopService) GetAll() []map[string]interface{}                       { return nil }
+func (s *OrderShopService) GetAll(userID string) []map[string]interface{}                       {
+	result := s.repositoryShopOrder.GetAll(userID)
+	return result
+}
 func (s *OrderShopService) Get(orderID string) map[string]interface{}              { return nil }
 func (s *OrderShopService) Update(orderID string, requestData *models.Order) error { return nil }
 func (s *OrderShopService) Delete(orderID string) error                            { return nil }

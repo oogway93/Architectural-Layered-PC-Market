@@ -58,13 +58,13 @@ func (d *ProductShopPostgres) GetAll(categoryID string) []map[string]interface{}
 	var products []models.Product
 	var category models.Category
 	tx := d.db.Begin()
-	getCategoryID := tx.Where("category_name = ? AND deleted_at IS NULL", categoryID).First(&category)
+	getCategoryID := tx.Where("category_name = ?", categoryID).First(&category)
 
 	if getCategoryID.Error != nil {
 		log.Printf("Error finding records from category: %v", getCategoryID.Error)
 	}
 
-	result := tx.Where("category_id = ? AND deleted_at IS NULL", category.ID).Find(&products)
+	result := tx.Where("category_id = ?", category.ID).Find(&products)
 	if result.Error != nil {
 		log.Printf("Error finding records from product: %v", result.Error)
 	}

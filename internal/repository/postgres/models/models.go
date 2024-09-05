@@ -29,7 +29,7 @@ type Product struct {
 	Price       decimal.Decimal `json:"price" gorm:"type:decimal(10, 2);not null"`
 	Description string          `json:"description" gorm:"type:text"`
 	CategoryID  uint            `json:"categoryId" gorm:"index"`
-	Category    Category        `json:"category,omitempty" gorm:"foreignKey:CategoryID"`
+	Category    Category        `json:"category" gorm:"foreignKey:CategoryID"`
 }
 
 type Order struct {
@@ -40,20 +40,20 @@ type Order struct {
 	Total      decimal.Decimal `json:"total" gorm:"type:decimal(10, 2)"`
 	DeliveryID uint            `json:"deliveryId" gorm:"index"`
 
-	OrderItems []OrderItem    `json:"order_items" gorm:"foreignKey:OrderID"`
-	User       User           `gorm:"foreignKey:UserID"`
-	Delivery   Delivery       `gorm:"foreignKey:DeliveryID"`
+	OrderItems []*OrderItem `gorm:"foreignKey:OrderID"`
+	User       User         `gorm:"foreignKey:UserID"`
+	Delivery   Delivery     `gorm:"foreignKey:DeliveryID"`
 }
 
 type OrderItem struct {
 	gorm.Model
-	ID        uint    `json:"id" gorm:"primaryKey"`
-	OrderID   uint    `json:"orderId" gorm:"index"`
-	ProductID uint    `json:"productId" gorm:"index"`
-	Quantity  int     `json:"quantity" gorm:"not null"`
+	ID        uint            `json:"id" gorm:"unique;primaryKey;autoIncrement"`
+	OrderID   uint            `json:"orderId" gorm:"index"`
+	ProductID uint            `json:"productId" gorm:"index"`
+	Quantity  int             `json:"quantity" gorm:"not null"`
 	UnitPrice decimal.Decimal `json:"unit_price" gorm:"type:decimal(10, 2)"`
 
-	Order   Order   `gorm:"foreignKey:OrderID"`
+	Order   *Order  `gorm:"foreignKey:OrderID"`
 	Product Product `gorm:"foreignKey:ProductID"`
 }
 

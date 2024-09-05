@@ -23,7 +23,7 @@ type CategoryRepository interface {
 type OrderRepository interface {
 	CreateOrderAndOrderItems(userID string, deliveryID uint, newItems []*models.OrderItem)
 	CreateDelivery(newDelivery *models.Delivery)
-	GetAll()
+	GetAll(userID string) []map[string]interface{}
 	Get()
 	Update()
 	Delete()

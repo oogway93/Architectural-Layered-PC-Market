@@ -28,7 +28,7 @@ type ServiceProduct interface {
 
 type ServiceOrder interface {
 	Create(userID string, requestData *products.Order)
-	GetAll() []map[string]interface{}
+	GetAll(userID string) []map[string]interface{}
 	Get(orderID string) map[string]interface{}
 	Update(orderID string, requestData *models.Order) error
 	Delete(orderID string) error

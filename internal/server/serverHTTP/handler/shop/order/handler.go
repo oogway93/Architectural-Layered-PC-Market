@@ -35,3 +35,23 @@ func (h *Handler) Create(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	c.JSON(http.StatusCreated, webResponse)
 }
+
+func (h *Handler) GetAll(c *gin.Context) {
+	userID, err := utils.GetUserID(c)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "get userID is incorrect",
+		})
+	}
+	result := h.service.ServiceOrder.GetAll(userID)
+
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}
+
+	c.Header("Content-Type", "application/json")
+	c.JSON(http.StatusOK, webResponse)
+}
