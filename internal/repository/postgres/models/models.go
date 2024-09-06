@@ -36,7 +36,7 @@ type Order struct {
 	gorm.Model
 	ID         uint            `json:"id" gorm:"unique;primaryKey;autoIncrement"`
 	UserID     uint            `json:"userId" gorm:"index"`
-	Status     string          `gorm:"type:varchar(20);not null;default:'pending'" validate:"oneof=pending in_process shipped delivered picked_up cancelled"`
+	Status     string          `gorm:"type:varchar(20);not null;default:'pending'" validate:"oneof=pending in_process shipped delivered picked_up completed cancelled"`
 	Total      decimal.Decimal `json:"total" gorm:"type:decimal(10, 2)"`
 	DeliveryID uint            `json:"deliveryId" gorm:"index"`
 

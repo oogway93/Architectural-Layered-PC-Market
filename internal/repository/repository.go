@@ -26,7 +26,7 @@ type OrderRepository interface {
 	GetAll(userID string) []map[string]interface{}
 	Get()
 	Update()
-	Delete()
+	Delete(orderID uint)
 	FetchProductID(productName string) map[string]interface{}
 	LastRow() (uint, error)
 	UpdateOrderStatus(orderID uint, newStatus string)

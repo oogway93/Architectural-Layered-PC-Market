@@ -162,7 +162,15 @@ func (d *OrderShopPostgres) GetAll(userID string) []map[string]interface{} {
 }
 func (d *OrderShopPostgres) Get()    {}
 func (d *OrderShopPostgres) Update() {}
-func (d *OrderShopPostgres) Delete() {}
+func (d *OrderShopPostgres) Delete(orderID uint) {
+	var order models.Order
+	tx := d.db.Begin()
+	result := tx.Where("id = ?", orderID).Delete(&order)
+	if result.Error != nil {
+		log.Fatalf("Error in DELETE method ORDER: %v", result.Error)
+	}
+	tx.Commit()
+}
 func (d *OrderShopPostgres) FetchProductID(productName string) map[string]interface{} {
 	var product models.Product
 	tx := d.db.Begin()

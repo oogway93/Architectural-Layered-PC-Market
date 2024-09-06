@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	Shipped    = "Shipped"
-	Delivered  = "Delivered"
-	PickedUp = "Picked_up"
+	Shipped   = "Shipped"
+	Delivered = "Delivered"
+	PickedUp  = "Picked_up"
+	Completed = "Completed"
 )
 
 type OrderShopService struct {
@@ -40,21 +41,21 @@ func (s *OrderShopService) Create(userID string, requestData *products.Order) {
 		resultProduct := s.repositoryShopOrder.FetchProductID(productItem.ProductRel.ProductName)
 		unitPrice, ok := resultProduct["price"].(decimal.Decimal)
 		if !ok {
-            log.Printf("Failed to convert price to decimal for product %s", productItem.ProductRel.ProductName)
-            continue
-        }
+			log.Printf("Failed to convert price to decimal for product %s", productItem.ProductRel.ProductName)
+			continue
+		}
 		orderItem := models.OrderItem{
 			ProductID: resultProduct["id"].(uint),
 			Quantity:  productItem.Quantity,
 			UnitPrice: unitPrice,
 		}
 		orderItems = append(orderItems, &orderItem)
-		
+
 	}
 	if len(orderItems) == 0 {
-        log.Println("No order items found")
-        return
-    }
+		log.Println("No order items found")
+		return
+	}
 
 	s.repositoryShopOrder.CreateDelivery(&deliveryModel)
 
@@ -75,13 +76,18 @@ func (s *OrderShopService) autoUpdateStatus(orderID uint) {
 		{Delivered, 10 * time.Minute},
 		{Shipped, 30 * time.Minute},
 		{PickedUp, 50 * time.Minute},
+		{Completed, 50 * time.Minute + 1 * time.Second},
 	}
 	for _, update := range statusUpdates {
 		time.Sleep(update.delay)
 		s.repositoryShopOrder.UpdateOrderStatus(orderID, update.status)
+		time.Sleep(1 * time.Second)
+		if update.status == "Completed" {
+			s.repositoryShopOrder.Delete(orderID)
+		}
 	}
 }
-func (s *OrderShopService) GetAll(userID string) []map[string]interface{}                       {
+func (s *OrderShopService) GetAll(userID string) []map[string]interface{} {
 	result := s.repositoryShopOrder.GetAll(userID)
 	return result
 }
