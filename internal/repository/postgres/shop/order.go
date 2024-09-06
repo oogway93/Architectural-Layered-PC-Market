@@ -19,9 +19,9 @@ func NewRepositoryOrderShop(db *gorm.DB) *OrderShopPostgres {
 	}
 }
 
-func (d *OrderShopPostgres) CreateOrderAndOrderItems(userID string, deliveryID uint, newItems []*models.OrderItem) {
-	tx := d.db.Begin()
+func (d *OrderShopPostgres) CreateOrderAndOrderItems(userID string, deliveryID uint, newItems []*models.OrderItem) *models.Order {
 	var user models.User
+	tx := d.db.Begin()
 	result := tx.Where("login = ?", userID).First(&user)
 	if result.Error != nil {
 		log.Printf("Error finding LOGIN from user: %v", result.Error)
@@ -30,14 +30,13 @@ func (d *OrderShopPostgres) CreateOrderAndOrderItems(userID string, deliveryID u
 	newOrder := models.Order{
 		UserID:     user.ID,
 		DeliveryID: deliveryID,
-		Status:     "in_process",
+		Status:     "In_process",
 	}
 
 	var total decimal.Decimal
 	for _, item := range newItems {
 		quantityInt64 := int64(item.Quantity)
 		total = total.Add(item.UnitPrice.Mul(decimal.NewFromInt(quantityInt64)))
-		// result := tx.Create(&item)
 	}
 
 	newOrder.Total = total
@@ -60,8 +59,21 @@ func (d *OrderShopPostgres) CreateOrderAndOrderItems(userID string, deliveryID u
 			log.Printf("Created new order items")
 		}
 	}
-
 	tx.Commit()
+	return &newOrder
+}
+func (d *OrderShopPostgres) UpdateOrderStatus(orderID uint, newStatus string) {
+	var order models.Order
+	result := d.db.Where("id = ?", orderID).First(&order)
+	if result.RowsAffected == 0 {
+		log.Fatalf("order not found")
+	}
+
+	order.Status = newStatus
+
+	if err := d.db.Save(&order).Error; err != nil {
+		log.Fatalf("failed to save order: %v", err)
+	}
 }
 
 func (d *OrderShopPostgres) CreateDelivery(newDelivery *models.Delivery) {

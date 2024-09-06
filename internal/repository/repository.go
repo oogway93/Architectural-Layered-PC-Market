@@ -21,7 +21,7 @@ type CategoryRepository interface {
 }
 
 type OrderRepository interface {
-	CreateOrderAndOrderItems(userID string, deliveryID uint, newItems []*models.OrderItem)
+	CreateOrderAndOrderItems(userID string, deliveryID uint, newItems []*models.OrderItem) (*models.Order)
 	CreateDelivery(newDelivery *models.Delivery)
 	GetAll(userID string) []map[string]interface{}
 	Get()
@@ -29,6 +29,7 @@ type OrderRepository interface {
 	Delete()
 	FetchProductID(productName string) map[string]interface{}
 	LastRow() (uint, error)
+	UpdateOrderStatus(orderID uint, newStatus string)
 }
 
 type UserRepository interface {

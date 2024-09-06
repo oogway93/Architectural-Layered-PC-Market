@@ -41,7 +41,7 @@ func (h *Handler) GetAll(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "get userID is incorrect",
+			"error": "getting userID is incorrect",
 		})
 	}
 	result := h.service.ServiceOrder.GetAll(userID)
