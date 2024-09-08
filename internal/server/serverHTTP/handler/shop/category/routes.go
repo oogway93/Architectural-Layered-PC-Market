@@ -5,17 +5,17 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/service"
 )
 
-type Handler struct {
-	service *service.Service
+type CategoryHandler struct {
+	service service.ServiceCategory
 }
 
-func NewCategoryShopHandler(service *service.Service) *Handler {
-	return &Handler{
+func NewCategoryShopHandler(service service.ServiceCategory) *CategoryHandler {
+	return &CategoryHandler{
 		service: service,
 	}
 }
 
-func (h *Handler) ShopCategoryHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.RouterGroup {
+func (h *CategoryHandler) ShopCategoryHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.RouterGroup {
 	category := apiRoutes.Group("/categories")
 	{
 		category.GET("/", h.GetAll)

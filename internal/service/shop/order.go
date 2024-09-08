@@ -18,12 +18,14 @@ const (
 )
 
 type OrderShopService struct {
-	repositoryShopOrder repository.OrderRepository
+	repo  repository.OrderRepository
+	cache repository.CacheRepository
 }
 
-func NewServiceShopOrder(repo repository.OrderRepository) *OrderShopService {
+func NewServiceShopOrder(repo repository.OrderRepository, cache repository.CacheRepository) *OrderShopService {
 	return &OrderShopService{
-		repositoryShopOrder: repo,
+		repo:  repo,
+		cache: cache,
 	}
 }
 
@@ -38,7 +40,7 @@ func (s *OrderShopService) Create(userID string, requestData *products.Order) {
 
 	var orderItems []*models.OrderItem
 	for _, productItem := range requestData.OrderItemsRel {
-		resultProduct := s.repositoryShopOrder.FetchProductID(productItem.ProductRel.ProductName)
+		resultProduct := s.repo.FetchProductID(productItem.ProductRel.ProductName)
 		unitPrice, ok := resultProduct["price"].(decimal.Decimal)
 		if !ok {
 			log.Printf("Failed to convert price to decimal for product %s", productItem.ProductRel.ProductName)
@@ -57,14 +59,14 @@ func (s *OrderShopService) Create(userID string, requestData *products.Order) {
 		return
 	}
 
-	s.repositoryShopOrder.CreateDelivery(&deliveryModel)
+	s.repo.CreateDelivery(&deliveryModel)
 
-	deliveryID, err := s.repositoryShopOrder.LastRow()
+	deliveryID, err := s.repo.LastRow()
 	if err != nil {
 		log.Fatalf("Error in getting last row from delivery: %v", err.Error())
 	}
 
-	order := s.repositoryShopOrder.CreateOrderAndOrderItems(userID, deliveryID, orderItems)
+	order := s.repo.CreateOrderAndOrderItems(userID, deliveryID, orderItems)
 	go s.autoUpdateStatus(order.ID)
 }
 
@@ -76,19 +78,19 @@ func (s *OrderShopService) autoUpdateStatus(orderID uint) {
 		{Delivered, 10 * time.Minute},
 		{Shipped, 30 * time.Minute},
 		{PickedUp, 50 * time.Minute},
-		{Completed, 50 * time.Minute + 1 * time.Second},
+		{Completed, 50*time.Minute + 1*time.Second},
 	}
 	for _, update := range statusUpdates {
 		time.Sleep(update.delay)
-		s.repositoryShopOrder.UpdateOrderStatus(orderID, update.status)
+		s.repo.UpdateOrderStatus(orderID, update.status)
 		time.Sleep(1 * time.Second)
 		if update.status == "Completed" {
-			s.repositoryShopOrder.Delete(orderID)
+			s.repo.Delete(orderID)
 		}
 	}
 }
 func (s *OrderShopService) GetAll(userID string) []map[string]interface{} {
-	result := s.repositoryShopOrder.GetAll(userID)
+	result := s.repo.GetAll(userID)
 	return result
 }
 func (s *OrderShopService) Get(orderID string) map[string]interface{}              { return nil }

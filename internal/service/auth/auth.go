@@ -7,17 +7,19 @@ import (
 )
 
 type AuthService struct {
-	repositoryAuth repository.AuthRepository
+	repo  repository.AuthRepository
+	cache repository.CacheRepository
 }
 
-func NewServiceAuth(repo repository.AuthRepository) *AuthService {
+func NewServiceAuth(repo repository.AuthRepository, cache repository.CacheRepository) *AuthService {
 	return &AuthService{
-		repositoryAuth: repo,
+		repo:  repo,
+		cache: cache,
 	}
 }
 
 func (s *AuthService) Login(requestData *user.AuthInput) bool {
-	result := s.repositoryAuth.Login(requestData.Login)
+	result := s.repo.Login(requestData.Login)
 	checkValidationPassword := utils.CheckHashPassword(result["hash_password"].(string), requestData.Password)
 	if checkValidationPassword {
 		return true

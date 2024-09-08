@@ -5,17 +5,17 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/service"
 )
 
-type Handler struct {
-	service *service.Service
+type ProductHandler struct {
+	service service.ServiceProduct
 }
 
-func NewProductShopHandler(service *service.Service) *Handler {
-	return &Handler{
+func NewProductShopHandler(service service.ServiceProduct) *ProductHandler {
+	return &ProductHandler{
 		service: service,
 	}
 }
 
-func (h *Handler) ShopProductHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.RouterGroup {
+func (h *ProductHandler) ShopProductHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.RouterGroup {
 	product := apiRoutes.Group("/categories/:category/products")
 	{
 		product.GET("/", h.GetAll)

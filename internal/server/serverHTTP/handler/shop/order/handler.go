@@ -9,7 +9,7 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/utils"
 )
 
-func (h *Handler) Create(c *gin.Context) {
+func (h *OrderHandler) Create(c *gin.Context) {
 	var order products.Order
 	
 	if err := c.BindJSON(&order); err != nil {
@@ -23,8 +23,7 @@ func (h *Handler) Create(c *gin.Context) {
 			"error": "get userID is incorrect",
 		})
 	}
-
-	h.service.ServiceOrder.Create(userID, &order)
+	h.service.Create(userID, &order)
 	
 	webResponse := response.WebResponse{
 		Code:   http.StatusCreated,
@@ -36,7 +35,7 @@ func (h *Handler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, webResponse)
 }
 
-func (h *Handler) GetAll(c *gin.Context) {
+func (h *OrderHandler) GetAll(c *gin.Context) {
 	userID, err := utils.GetUserID(c)
 
 	if err != nil {
@@ -44,7 +43,7 @@ func (h *Handler) GetAll(c *gin.Context) {
 			"error": "getting userID is incorrect",
 		})
 	}
-	result := h.service.ServiceOrder.GetAll(userID)
+	result := h.service.GetAll(userID)
 
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,

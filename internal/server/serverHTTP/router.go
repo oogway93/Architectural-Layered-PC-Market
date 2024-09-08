@@ -10,36 +10,41 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/service"
 )
 
-
-func SetupRouter(service *service.Service) *gin.Engine {
+func SetupRouter(
+	ServiceCategory service.ServiceCategory,
+	ServiceProduct service.ServiceProduct,
+	ServiceOrder service.ServiceOrder,
+	ServiceUser service.ServiceUser,
+	ServiceAuth service.ServiceAuth,
+) *gin.Engine {
 	router := gin.Default()
 	apiRoutes := router.Group("/api", UserIdentity)
 
-	registerShopCategoryRoutes(service, apiRoutes)
-	registerShopProductRoutes(service, apiRoutes)
-	registerOrderRoutes(service, apiRoutes)
-	registerUserRoutes(service, router)
-	registerAuthRoutes(service, router)
+	registerShopCategoryRoutes(ServiceCategory, apiRoutes)
+	registerShopProductRoutes(ServiceProduct, apiRoutes)
+	registerOrderRoutes(ServiceOrder, apiRoutes)
+	registerUserRoutes(ServiceUser, router)
+	registerAuthRoutes(ServiceAuth, router)
 
 	return router
 }
 
-func registerShopCategoryRoutes(service *service.Service, apiRoutes *gin.RouterGroup) {
+func registerShopCategoryRoutes(service service.ServiceCategory, apiRoutes *gin.RouterGroup) {
 	handlerShopCategory.NewCategoryShopHandler(service).ShopCategoryHandlerRoutes(apiRoutes)
 }
 
-func registerShopProductRoutes(service *service.Service, apiRoutes *gin.RouterGroup) {
+func registerShopProductRoutes(service service.ServiceProduct, apiRoutes *gin.RouterGroup) {
 	handlerShopProduct.NewProductShopHandler(service).ShopProductHandlerRoutes(apiRoutes)
 }
 
-func registerOrderRoutes(service *service.Service, router *gin.RouterGroup) {
+func registerOrderRoutes(service service.ServiceOrder, router *gin.RouterGroup) {
 	handlerShopOrder.NewOrderShopHandler(service).ShopOrderHandlerRoutes(router)
 }
 
-func registerUserRoutes(service *service.Service, router *gin.Engine) {
+func registerUserRoutes(service service.ServiceUser, router *gin.Engine) {
 	handlerUser.NewUserHandler(service).UserHandlerRoutes(router)
 }
 
-func registerAuthRoutes(service *service.Service, router *gin.Engine) {
+func registerAuthRoutes(service service.ServiceAuth, router *gin.Engine) {
 	handlerAuth.NewAuthHandler(service).AuthHandlerRoutes(router)
 }

@@ -5,17 +5,17 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/service"
 )
 
-type Handler struct {
-	service *service.Service
+type UserHandler struct {
+	service service.ServiceUser
 }
 
-func NewUserHandler(service *service.Service) *Handler {
-	return &Handler{
+func NewUserHandler(service service.ServiceUser) *UserHandler {
+	return &UserHandler{
 		service: service,
 	}
 }
 
-func (h *Handler) UserHandlerRoutes(router *gin.Engine) *gin.RouterGroup {
+func (h *UserHandler) UserHandlerRoutes(router *gin.Engine) *gin.RouterGroup {
 	user := router.Group("/user")
 	{
 		user.GET("/", h.GetAll)

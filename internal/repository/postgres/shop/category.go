@@ -4,12 +4,14 @@ import (
 	"log"
 	"time"
 
+	"github.com/oogway93/golangArchitecture/internal/repository"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
 	"gorm.io/gorm"
 )
 
 type CategoryShopPostgres struct {
 	db *gorm.DB
+	cache repository.CacheRepository
 }
 
 func NewRepositoryCategoryShop(db *gorm.DB) *CategoryShopPostgres {
@@ -66,7 +68,6 @@ func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 				"uuid":         product.UUID,
 			})
 		}
-		//////////////////////////////////
 		resultCategories = append(resultCategories, map[string]interface{}{
 			"category_name": category.CategoryName,
 			"products":      resultProducts,

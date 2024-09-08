@@ -12,15 +12,15 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/errors/data/response"
 )
 
-func (h *Handler) Login(c *gin.Context) {
+func (h *AuthHandler) Login(c *gin.Context) {
 	var authInput user.AuthInput
 
 	if err := c.BindJSON(&authInput); err != nil {
 		log.Fatalf("Error LOGIN handler: %v", err.Error())
 	}
 
-	result := h.service.ServiceAuth.Login(&authInput)
-	
+	result := h.service.Login(&authInput)
+
 	c.Header("Content-Type", "application/json")
 	if !result {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -30,7 +30,7 @@ func (h *Handler) Login(c *gin.Context) {
 	}
 
 	generateToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"login":  authInput.Login,
+		"login":      authInput.Login,
 		"expiration": time.Now().Add(time.Hour * 24).Unix(),
 	})
 	token, err := generateToken.SignedString([]byte(os.Getenv("SECRET")))
@@ -42,11 +42,10 @@ func (h *Handler) Login(c *gin.Context) {
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",
-		Data:   gin.H{
+		Data: gin.H{
 			"token": token,
 		},
 	}
 
 	c.JSON(http.StatusOK, webResponse)
 }
-

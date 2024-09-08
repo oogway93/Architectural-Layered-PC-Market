@@ -5,17 +5,17 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/service"
 )
 
-type Handler struct {
-	service *service.Service
+type AuthHandler struct {
+	service service.ServiceAuth
 }
 
-func NewAuthHandler(service *service.Service) *Handler {
-	return &Handler{
+func NewAuthHandler(service service.ServiceAuth) *AuthHandler {
+	return &AuthHandler{
 		service: service,
 	}
 }
 
-func (h *Handler) AuthHandlerRoutes(router *gin.Engine) *gin.RouterGroup {
+func (h *AuthHandler) AuthHandlerRoutes(router *gin.Engine) *gin.RouterGroup {
 	auth := router.Group("/user/auth")
 	{
 		auth.POST("/login", h.Login)

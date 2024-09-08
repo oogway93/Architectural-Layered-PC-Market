@@ -9,7 +9,7 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/errors/data/response"
 )
 
-func (h *Handler) Create(c *gin.Context) {
+func (h *UserHandler) Create(c *gin.Context) {
 	var newUser user.User
 
 	err := c.BindJSON(&newUser)
@@ -18,7 +18,7 @@ func (h *Handler) Create(c *gin.Context) {
 		return
 	}
 
-	h.service.ServiceUser.Create(&newUser)
+	h.service.Create(&newUser)
 
 	webResponse := response.WebResponse{
 		Code:   http.StatusCreated,
@@ -30,8 +30,8 @@ func (h *Handler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, webResponse)
 }
 
-func (h *Handler) GetAll(c *gin.Context) {
-	result := h.service.ServiceUser.GetAll()
+func (h *UserHandler) GetAll(c *gin.Context) {
+	result := h.service.GetAll()
 
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
@@ -43,7 +43,7 @@ func (h *Handler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, webResponse)
 }
 
-func (h *Handler) Update(c *gin.Context) {
+func (h *UserHandler) Update(c *gin.Context) {
 	var newUser user.UserUpdated
 
 	err := c.BindJSON(&newUser)
@@ -53,15 +53,15 @@ func (h *Handler) Update(c *gin.Context) {
 	}
 	loginID := c.Param("login")
 
-	h.service.ServiceUser.Update(loginID, &newUser)
+	h.service.Update(loginID, &newUser)
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "User UPDATED successfully",
 	})
 }
 
-func (h *Handler) Delete(c *gin.Context) {
+func (h *UserHandler) Delete(c *gin.Context) {
 	loginID := c.Param("login")
-	result := h.service.ServiceUser.Delete(loginID)
+	result := h.service.Delete(loginID)
 	if result != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "DELETE method doesn't work",

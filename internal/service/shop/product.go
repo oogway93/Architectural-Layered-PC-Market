@@ -7,12 +7,14 @@ import (
 )
 
 type ProductShopService struct {
-	repositoryShopProduct repository.ProductRepository
+	repo repository.ProductRepository
+	cache                 repository.CacheRepository
 }
 
-func NewServiceShopProduct(repo repository.ProductRepository) *ProductShopService {
+func NewServiceShopProduct(repo repository.ProductRepository, cache repository.CacheRepository) *ProductShopService {
 	return &ProductShopService{
-		repositoryShopProduct: repo,
+		repo: repo,
+		cache: cache,
 	}
 }
 
@@ -22,18 +24,18 @@ func (c *ProductShopService) Create(categoryID string, requestData *products.Pro
 		Price:       requestData.Price,
 		Description: requestData.Description,
 	}
-	c.repositoryShopProduct.Create(categoryID, productModel)
+	c.repo.Create(categoryID, productModel)
 }
 func (c *ProductShopService) GetAll(categoryID string) []map[string]interface{} {
-	result := c.repositoryShopProduct.GetAll(categoryID)
+	result := c.repo.GetAll(categoryID)
 	return result
 }
 func (c *ProductShopService) Delete(categoryID, productID string) error {
-	result := c.repositoryShopProduct.Delete(categoryID, productID)
-	return result 
+	result := c.repo.Delete(categoryID, productID)
+	return result
 }
 func (c *ProductShopService) Get(categoryID, productID string) map[string]interface{} {
-	result := c.repositoryShopProduct.Get(categoryID, productID)
+	result := c.repo.Get(categoryID, productID)
 	return result
 }
 func (c *ProductShopService) Update(categoryID, productID string, requestData *products.Product) error {
@@ -43,6 +45,6 @@ func (c *ProductShopService) Update(categoryID, productID string, requestData *p
 		Description: requestData.Description,
 	}
 	newCategoryName := requestData.CategoryRel.CategoryName
-	result := c.repositoryShopProduct.Update(newCategoryName, productID, productModel)
+	result := c.repo.Update(newCategoryName, productID, productModel)
 	return result
 }

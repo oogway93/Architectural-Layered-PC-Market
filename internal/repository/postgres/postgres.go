@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/oogway93/golangArchitecture/internal/repository"
-	"github.com/oogway93/golangArchitecture/internal/repository/postgres/shop"
-	repositoryPostgresAuth "github.com/oogway93/golangArchitecture/internal/repository/postgres/auth"
+	repositoryPostgresAuth "github.com/oogway93/golangArchitecture/internal/repository/postgres/repositoryPostgresAuth"
+	repositoryPostgresShop "github.com/oogway93/golangArchitecture/internal/repository/postgres/shop"
 	repositoryPostgresUser "github.com/oogway93/golangArchitecture/internal/repository/postgres/user"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -27,17 +27,17 @@ func DatabaseConnection(cfg Config) *gorm.DB {
 	db, err := gorm.Open(postgres.Open(sqlInfo), &gorm.Config{})
 
 	if err != nil {
-        log.Fatalf("Failed to connect to database: %v", err)
-    }
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
 	return db
 }
 
 func NewRepository(db *gorm.DB) *repository.Repository {
 	return &repository.Repository{
-		ProductRepository: repositoryPostgresShop.NewRepositoryProductShop(db),
+		ProductRepository:  repositoryPostgresShop.NewRepositoryProductShop(db),
 		CategoryRepository: repositoryPostgresShop.NewRepositoryCategoryShop(db),
-		OrderRepository: repositoryPostgresShop.NewRepositoryOrderShop(db),
-		UserRepository: repositoryPostgresUser.NewRepositoryUser(db),
-		AuthRepository: repositoryPostgresAuth.NewRepositoryAuth(db),
+		OrderRepository:    repositoryPostgresShop.NewRepositoryOrderShop(db),
+		UserRepository:     repositoryPostgresUser.NewRepositoryUser(db),
+		AuthRepository:     repositoryPostgresAuth.NewRepositoryAuth(db),
 	}
 }

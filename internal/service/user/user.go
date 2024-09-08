@@ -8,12 +8,14 @@ import (
 )
 
 type UserService struct {
-	repositoryUser repository.UserRepository
+	repo  repository.UserRepository
+	cache repository.CacheRepository
 }
 
-func NewServiceUser(repo repository.UserRepository) *UserService {
+func NewServiceUser(repo repository.UserRepository, cache repository.CacheRepository) *UserService {
 	return &UserService{
-		repositoryUser: repo,
+		repo:  repo,
+		cache: cache,
 	}
 }
 
@@ -24,11 +26,11 @@ func (c *UserService) Create(requestData *user.User) {
 		Username: requestData.Username,
 		Password: hashPassword,
 	}
-	c.repositoryUser.Create(userModel)
+	c.repo.Create(userModel)
 }
 
 func (c *UserService) GetAll() []map[string]interface{} {
-	result := c.repositoryUser.GetAll()
+	result := c.repo.GetAll()
 	return result
 }
 
@@ -38,15 +40,15 @@ func (c *UserService) Update(loginId string, requestData *user.UserUpdated) erro
 		Username: requestData.Username,
 		Password: hashPassword,
 	}
-	status := c.repositoryUser.Update(loginId, userModel)
+	status := c.repo.Update(loginId, userModel)
 	return status
 }
 
 func (c *UserService) Delete(loginID string) error {
-	result := c.repositoryUser.Delete(loginID)
+	result := c.repo.Delete(loginID)
 	return result
 }
 func (c *UserService) Get(login string) map[string]interface{} {
-	result := c.repositoryUser.Get(login)
+	result := c.repo.Get(login)
 	return result
 }

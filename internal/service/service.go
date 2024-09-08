@@ -3,11 +3,11 @@ package service
 import (
 	"github.com/oogway93/golangArchitecture/internal/entity/products"
 	"github.com/oogway93/golangArchitecture/internal/entity/user"
-	"github.com/oogway93/golangArchitecture/internal/repository"
+	// "github.com/oogway93/golangArchitecture/internal/repository"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
-	serviceAuth "github.com/oogway93/golangArchitecture/internal/service/auth"
-	"github.com/oogway93/golangArchitecture/internal/service/shop"
-	"github.com/oogway93/golangArchitecture/internal/service/user"
+	// "github.com/oogway93/golangArchitecture/internal/service/auth"
+	// "github.com/oogway93/golangArchitecture/internal/service/shop"
+	// "github.com/oogway93/golangArchitecture/internal/service/user"
 )
 
 type ServiceCategory interface {
@@ -53,12 +53,12 @@ type Service struct {
 	ServiceAuth     ServiceAuth
 }
 
-func NewService(repo *repository.Repository) *Service {
-	return &Service{
-		ServiceProduct:  serviceShop.NewServiceShopProduct(repo.ProductRepository),
-		ServiceCategory: serviceShop.NewServiceShopCategory(repo.CategoryRepository),
-		ServiceOrder:    serviceShop.NewServiceShopOrder(repo.OrderRepository),
-		ServiceUser:     serviceUser.NewServiceUser(repo.UserRepository),
-		ServiceAuth:     serviceAuth.NewServiceAuth(repo.AuthRepository),
-	}
-}
+// func NewService(repo *repository.Repository, cache *repository.Cache) *Service {
+// 	return &Service{
+// 		ServiceProduct:  serviceShop.NewServiceShopProduct(repo.ProductRepository),
+// 		ServiceCategory: serviceShop.NewServiceShopCategory(repo.CategoryRepository, cache.CacheRepository),
+// 		ServiceOrder:    serviceShop.NewServiceShopOrder(repo.OrderRepository),
+// 		ServiceUser:     serviceUser.NewServiceUser(repo.UserRepository),
+// 		ServiceAuth:     serviceAuth.NewServiceAuth(repo.AuthRepository),
+// 	}
+// }

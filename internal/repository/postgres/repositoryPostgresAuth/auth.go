@@ -1,8 +1,9 @@
-package repositoryPostgresUser
+package repositoryPostgresAuth
 
 import (
 	"log"
 
+	// "github.com/oogway93/golangArchitecture/internal/repository"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
 	"gorm.io/gorm"
 )
