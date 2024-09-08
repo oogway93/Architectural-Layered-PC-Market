@@ -1,6 +1,7 @@
 package serviceShop
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -31,7 +32,7 @@ func (s *CategoryShopService) Create(requestData *products.Category) {
 		CategoryName: requestData.CategoryName,
 	}
 	s.repo.Create(categoryModel)
-	key := "category"
+	key := fmt.Sprintf("category:%s", requestData.CategoryName)
 	categorySerialized, err := utils.Serialize(categoryModel)
 	if err != nil {
 		log.Fatal("serialization incorrect")
@@ -69,18 +70,69 @@ func (s *CategoryShopService) GetAll() []map[string]interface{} {
 	return categories
 }
 func (s *CategoryShopService) Get(categoryID string) map[string]interface{} {
-	result := s.repo.Get(categoryID)
-	return result
-}
+	var category map[string]interface{}
+	key := fmt.Sprintf("category:%s", categoryID)
+	cachedCategories, err := s.cache.Get(key)
+	if err == nil {
+		err := utils.Deserialize(cachedCategories, &category)
+		if err != nil {
+			return nil
+		}
 
+		return category
+	}
+	category = s.repo.Get(categoryID)
+
+	categoriesSerialized, err := utils.Serialize(category)
+	if err != nil {
+		return nil
+	}
+
+	err = s.cache.Set(key, categoriesSerialized, ttl)
+	if err != nil {
+		return nil
+	}
+	return category
+}
 func (s *CategoryShopService) Delete(categoryID string) error {
-	result := s.repo.Delete(categoryID)
-	return result
+	key := fmt.Sprintf("category:%s", categoryID)
+	err := s.cache.Delete(key)
+	if err != nil {
+		return fmt.Errorf("error in Delete  method category cache")
+	}
+	err = s.repo.Delete(categoryID)
+
+	if err != nil {
+		return fmt.Errorf("error in Delete  method category repo postgres")	}
+
+	return nil
 }
 func (s *CategoryShopService) Update(categoryID string, requestData *products.Category) error {
 	categoryModel := models.Category{
 		CategoryName: requestData.CategoryName,
 	}
-	result := s.repo.Update(categoryID, categoryModel)
-	return result
+	
+	err := s.repo.Update(categoryID, categoryModel)
+	if err != nil {
+		return fmt.Errorf("error in Update method category repo")
+	}
+
+	key := fmt.Sprintf("category:%s", categoryID)
+	err = s.cache.Delete(key)
+	if err != nil {
+		return fmt.Errorf("error in Update  method category cache")
+	}
+
+	categorySerialized, err := utils.Serialize(requestData.CategoryName)
+	if err != nil {
+		return fmt.Errorf("error in Serilization Update method category cache")
+	}
+
+	newKey := fmt.Sprintf("category:%s", requestData.CategoryName)
+	err = s.cache.Set(newKey, categorySerialized, ttl)
+	if err != nil {
+		log.Fatal("set cache incorrect")
+	}
+	return nil
+
 }
