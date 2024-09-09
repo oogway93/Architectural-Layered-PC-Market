@@ -7,12 +7,12 @@ import (
 )
 
 type ProductRepository interface {
+	GetByCategoryId(categoryID uint) string
 	Create(categoryID string, requestData models.Product) error
 	GetAll(categoryID string) []map[string]interface{}
 	Delete(categoryID string, productID string) error
 	Get(categoryID string, productID string) map[string]interface{}
-	Update(newCategoryName string, productID string, newProduct models.Product) error
-}
+	Update(newCategoryName, productID string, newProduct models.Product) (map[string]interface{}, error)}
 
 type CategoryRepository interface {
 	Create(requestData models.Category)

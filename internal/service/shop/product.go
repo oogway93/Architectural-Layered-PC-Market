@@ -1,50 +1,136 @@
 package serviceShop
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/oogway93/golangArchitecture/internal/entity/products"
 	"github.com/oogway93/golangArchitecture/internal/repository"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
+	"github.com/oogway93/golangArchitecture/internal/utils"
 )
 
 type ProductShopService struct {
-	repo repository.ProductRepository
-	cache                 repository.CacheRepository
+	repo  repository.ProductRepository
+	cache repository.CacheRepository
 }
 
 func NewServiceShopProduct(repo repository.ProductRepository, cache repository.CacheRepository) *ProductShopService {
 	return &ProductShopService{
-		repo: repo,
+		repo:  repo,
 		cache: cache,
 	}
 }
 
-func (c *ProductShopService) Create(categoryID string, requestData *products.Product) {
+func (s *ProductShopService) Create(categoryID string, requestData *products.Product) {
 	productModel := models.Product{
 		ProductName: requestData.ProductName,
 		Price:       requestData.Price,
 		Description: requestData.Description,
 	}
-	c.repo.Create(categoryID, productModel)
+	s.repo.Create(categoryID, productModel)
+	key := fmt.Sprintf("category:%s::product:%s", categoryID, requestData.ProductName)
+	productsSerialized, err := utils.Serialize(productModel)
+	if err != nil {
+		log.Fatal("serialization incorrect")
+	}
+	err = s.cache.Set(key, productsSerialized, ttl)
+	if err != nil {
+		log.Fatal("set cache incorrect")
+	}
 }
-func (c *ProductShopService) GetAll(categoryID string) []map[string]interface{} {
-	result := c.repo.GetAll(categoryID)
+func (s *ProductShopService) GetAll(categoryID string) []map[string]interface{} {
+	var products []map[string]interface{}
+	key := "products"
+	cachedProducts, err := s.cache.Get(key)
+	if err == nil {
+		err := utils.Deserialize(cachedProducts, &products)
+		if err != nil {
+			return nil
+		}
+		return products
+	}
+	products = s.repo.GetAll(categoryID)
+
+	productsSerialized, err := utils.Serialize(products)
+	if err != nil {
+		log.Fatal("serialization incorrect")
+	}
+	err = s.cache.Set(key, productsSerialized, ttl)
+	if err != nil {
+		log.Fatal("set cache incorrect")
+	}
+
+	return products
+}
+func (s *ProductShopService) Delete(categoryID, productID string) error {
+	key := fmt.Sprintf("category:%s::product:%s", categoryID, productID)
+	err := s.cache.Delete(key)
+	if err != nil {
+		return fmt.Errorf("error in Delete  method category cache")
+	}
+	result := s.repo.Delete(categoryID, productID)
+	if err != nil {
+		return fmt.Errorf("error in Delete  method category repo postgres")
+	}
+
 	return result
 }
-func (c *ProductShopService) Delete(categoryID, productID string) error {
-	result := c.repo.Delete(categoryID, productID)
-	return result
+func (s *ProductShopService) Get(categoryID, productID string) map[string]interface{} {
+	var product map[string]interface{}
+	key := fmt.Sprintf("category:%s::product:%s", categoryID, productID)
+	cachedProduct, err := s.cache.Get(key)
+	if err == nil {
+		err := utils.Deserialize(cachedProduct, &product)
+		if err != nil {
+			return nil
+		}
+
+		return product
+	}
+	product = s.repo.Get(categoryID, productID)
+
+	productSerialized, err := utils.Serialize(product)
+	if err != nil {
+		return nil
+	}
+
+	err = s.cache.Set(key, productSerialized, ttl)
+	if err != nil {
+		return nil
+	}
+	return product
 }
-func (c *ProductShopService) Get(categoryID, productID string) map[string]interface{} {
-	result := c.repo.Get(categoryID, productID)
-	return result
-}
-func (c *ProductShopService) Update(categoryID, productID string, requestData *products.Product) error {
+func (s *ProductShopService) Update(categoryID, productID string, requestData *products.Product) error {
 	productModel := models.Product{
 		ProductName: requestData.ProductName,
 		Price:       requestData.Price,
 		Description: requestData.Description,
 	}
 	newCategoryName := requestData.CategoryRel.CategoryName
-	result := c.repo.Update(newCategoryName, productID, productModel)
-	return result
+	resultProduct, err := s.repo.Update(newCategoryName, productID, productModel)
+	if err != nil {
+		return fmt.Errorf("error in Update method category repo")
+	}
+	key := fmt.Sprintf("category:%s::product:%s", categoryID, productID)
+	err = s.cache.Delete(key)
+	if err != nil {
+		return fmt.Errorf("error in Update  method category cache")
+	}
+
+	if requestData.CategoryRel.CategoryName == "" {
+		categoryName := s.repo.GetByCategoryId(resultProduct["categoryID"].(uint))
+		resultProduct["category_name"] = categoryName
+	}
+
+	productSerialized, err := utils.Serialize(resultProduct)
+	if err != nil {
+		return fmt.Errorf("error in Serialization Update method category cache")
+	}
+	newKey := fmt.Sprintf("category:%s::product:%s", resultProduct["category_name"], resultProduct["product_name"])
+	err = s.cache.Set(newKey, productSerialized, ttl)
+	if err != nil {
+		log.Fatal("set cache incorrect")
+	}
+	return nil
 }

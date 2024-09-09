@@ -20,11 +20,22 @@ func NewRepositoryProductShop(db *gorm.DB) *ProductShopPostgres {
 	}
 }
 
+func (d *ProductShopPostgres) GetByCategoryId(categoryID uint) string {
+	tx := d.db.Begin()
+	var existingCategory models.Category
+	result := tx.Unscoped().Where("id = ?", categoryID).First(&existingCategory)
+	if result.Error != nil {
+		log.Printf("Error finding records from category: %v", result.Error)
+	}
+	tx.Commit()
+	return existingCategory.CategoryName
+}
+
 func (d *ProductShopPostgres) Create(categoryID string, newProduct models.Product) error {
 	tx := d.db.Begin()
 
 	var checkingProduct models.Product
-	check := tx.Unscoped().Where("product_name = ? AND deleted_at IS NOT NULL", newProduct.ProductName).First(&checkingProduct)
+	check := tx.Unscoped().Where("product_name = ?", newProduct.ProductName).First(&checkingProduct)
 	if check.Error == nil {
 		rawSQL := `UPDATE products SET deleted_at = NULL WHERE product_name = ?`
 		tx.Exec(rawSQL, checkingProduct.ProductName)
@@ -105,13 +116,13 @@ func (d *ProductShopPostgres) Get(categoryID string, productID string) map[strin
 	var product models.Product
 	var category models.Category
 	tx := d.db.Begin()
-	getCategoryID := tx.Where("category_name = ? AND deleted_at IS NULL", categoryID).First(&category)
+	getCategoryID := tx.Where("category_name = ?", categoryID).First(&category)
 
 	if getCategoryID.Error != nil {
 		log.Printf("Error finding records from category: %v", getCategoryID.Error)
 	}
 
-	result := tx.Where("category_id = ? AND product_name = ? AND deleted_at IS NULL", category.ID, productID).First(&product)
+	result := tx.Where("category_id = ? AND product_name = ?", category.ID, productID).First(&product)
 	if result.Error != nil {
 		log.Printf("Error finding records from product: %v", result.Error)
 	}
@@ -125,24 +136,25 @@ func (d *ProductShopPostgres) Get(categoryID string, productID string) map[strin
 	tx.Commit()
 	return resultProduct
 }
-func (d *ProductShopPostgres) Update(newCategoryName, productID string, newProduct models.Product) error {
+func (d *ProductShopPostgres) Update(newCategoryName, productID string, newProduct models.Product) (map[string]interface{}, error) {
 	var product models.Product
 	var category models.Category
 	tx := d.db.Begin()
-	
-	result := tx.Where("product_name = ? AND deleted_at IS NULL", productID).First(&product)
+
+	result := tx.Where("product_name = ?", productID).First(&product)
 	if result.Error != nil {
-		return result.Error
+		return nil, result.Error
 	}
 
 	if newCategoryName != "" {
-		getCategory := tx.Where("category_name = ? AND deleted_at IS NULL", newCategoryName).First(&category)
-		
+		getCategory := tx.Where("category_name = ?", newCategoryName).First(&category)
+
 		if getCategory.Error != nil {
 			log.Printf("Error finding records from category: %v", getCategory.Error)
 		}
 		product.CategoryID = category.ID
 	}
+
 	if newProduct.ProductName != "" {
 		product.ProductName = newProduct.ProductName
 	}
@@ -155,5 +167,14 @@ func (d *ProductShopPostgres) Update(newCategoryName, productID string, newProdu
 	product.UpdatedAt = time.Now()
 	result = tx.Save(&product)
 	tx.Commit()
-	return result.Error
+	log.Printf("asdsadsad   %v\n\n", product.Category.CategoryName)
+	resultProduct := map[string]interface{}{
+		"uuid":          product.UUID,
+		"categoryID":    product.CategoryID,
+		"category_name": category.CategoryName,
+		"product_name":  product.ProductName,
+		"price":         product.Price,
+		"description":   product.Description,
+	}
+	return resultProduct, result.Error
 }

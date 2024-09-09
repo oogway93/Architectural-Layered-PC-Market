@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/oogway93/golangArchitecture/internal/repository"
-	repositoryPostgresAuth "github.com/oogway93/golangArchitecture/internal/repository/postgres/repositoryPostgresAuth"
+	repositoryPostgresAuth "github.com/oogway93/golangArchitecture/internal/repository/postgres/auth"
 	repositoryPostgresShop "github.com/oogway93/golangArchitecture/internal/repository/postgres/shop"
 	repositoryPostgresUser "github.com/oogway93/golangArchitecture/internal/repository/postgres/user"
 	"gorm.io/driver/postgres"

@@ -22,7 +22,7 @@ type ServiceProduct interface {
 	Create(categoryID string, requestData *products.Product)
 	GetAll(categoryID string) []map[string]interface{}
 	Get(categoryID string, productID string) map[string]interface{}
-	Update(categoryID string, productID string, requestData *products.Product) error
+	Update(newCategoryName, productID string, newProduct *products.Product)  error
 	Delete(categoryID, productID string) error
 }
 

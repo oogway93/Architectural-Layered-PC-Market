@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 	repositoryPostgres "github.com/oogway93/golangArchitecture/internal/repository/postgres"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
-	"github.com/oogway93/golangArchitecture/internal/repository/postgres/repositoryPostgresAuth"
+	"github.com/oogway93/golangArchitecture/internal/repository/postgres/auth"
 	repositoryPostgresShop "github.com/oogway93/golangArchitecture/internal/repository/postgres/shop"
 	repositoryPostgresUser "github.com/oogway93/golangArchitecture/internal/repository/postgres/user"
 	repositoryRedis "github.com/oogway93/golangArchitecture/internal/repository/redis"
