@@ -62,9 +62,9 @@ func (d *OrderShopPostgres) CreateOrderAndOrderItems(userID string, deliveryID u
 	tx.Commit()
 	return &newOrder
 }
-func (d *OrderShopPostgres) UpdateOrderStatus(orderID uint, newStatus string) {
+func (d *OrderShopPostgres) UpdateOrderStatus(orderID string, newStatus string) {
 	var order models.Order
-	result := d.db.Where("id = ?", orderID).First(&order)
+	result := d.db.Where("uuid = ?", orderID).First(&order)
 	if result.RowsAffected == 0 {
 		log.Fatalf("order not found")
 	}
@@ -162,14 +162,15 @@ func (d *OrderShopPostgres) GetAll(userID string) []map[string]interface{} {
 }
 func (d *OrderShopPostgres) Get()    {}
 func (d *OrderShopPostgres) Update() {}
-func (d *OrderShopPostgres) Delete(orderID uint) {
+func (d *OrderShopPostgres) Delete(orderID string) error {
 	var order models.Order
 	tx := d.db.Begin()
-	result := tx.Where("id = ?", orderID).Delete(&order)
+	result := tx.Where("uuid = ?", orderID).Delete(&order)
 	if result.Error != nil {
 		log.Fatalf("Error in DELETE method ORDER: %v", result.Error)
 	}
 	tx.Commit()
+	return result.Error
 }
 func (d *OrderShopPostgres) FetchProductID(productName string) map[string]interface{} {
 	var product models.Product

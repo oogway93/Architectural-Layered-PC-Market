@@ -22,7 +22,7 @@ func (h *OrderHandler) ShopOrderHandlerRoutes(apiRoutes *gin.RouterGroup) *gin.R
 		order.POST("/", h.Create)
 		// order.GET("/:category", nil)
 		// order.PUT("/:category", nil)
-		// order.DELETE("/:category", nil)
+		order.DELETE("/:order", h.Delete)
 	}
 
 	return order

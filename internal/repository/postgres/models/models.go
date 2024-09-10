@@ -28,13 +28,14 @@ type Product struct {
 	ProductName string          `json:"product_name" gorm:"type:varchar(64);unique;not null"`
 	Price       decimal.Decimal `json:"price" gorm:"type:decimal(10, 2);not null"`
 	Description string          `json:"description" gorm:"type:text"`
-	CategoryID  uint            `json:"categoryId" gorm:"index"`
+	CategoryID  uint            `json:"categoryId" gorm:"index;constraint:OnDelete:CASCADE"`
 	Category    Category        `json:"category" gorm:"foreignKey:CategoryID"`
 }
 
 type Order struct {
 	gorm.Model
 	ID         uint            `json:"id" gorm:"unique;primaryKey;autoIncrement"`
+	UUID       uuid.UUID       `json:"uuid" gorm:"type:uuid;default:gen_random_uuid();index"`
 	UserID     uint            `json:"userId" gorm:"index"`
 	Status     string          `gorm:"type:varchar(20);not null;default:'pending'" validate:"oneof=pending in_process shipped delivered picked_up completed cancelled"`
 	Total      decimal.Decimal `json:"total" gorm:"type:decimal(10, 2)"`

@@ -28,10 +28,10 @@ type OrderRepository interface {
 	GetAll(userID string) []map[string]interface{}
 	Get()
 	Update()
-	Delete(orderID uint)
+	Delete(orderID string) error
 	FetchProductID(productName string) map[string]interface{}
 	LastRow() (uint, error)
-	UpdateOrderStatus(orderID uint, newStatus string)
+	UpdateOrderStatus(orderID string, newStatus string)
 }
 
 type UserRepository interface {

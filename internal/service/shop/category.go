@@ -32,15 +32,6 @@ func (s *CategoryShopService) Create(requestData *products.Category) {
 		CategoryName: requestData.CategoryName,
 	}
 	s.repo.Create(categoryModel)
-	key := fmt.Sprintf("category:%s", requestData.CategoryName)
-	categorySerialized, err := utils.Serialize(categoryModel)
-	if err != nil {
-		log.Fatal("serialization incorrect")
-	}
-	err = s.cache.Set(key, categorySerialized, ttl)
-	if err != nil {
-		log.Fatal("set cache incorrect")
-	}
 }
 
 func (s *CategoryShopService) GetAll() []map[string]interface{} {

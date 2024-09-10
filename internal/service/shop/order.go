@@ -1,12 +1,14 @@
 package serviceShop
 
 import (
+	"fmt"
 	"log"
 	"time"
 
 	"github.com/oogway93/golangArchitecture/internal/entity/products"
 	"github.com/oogway93/golangArchitecture/internal/repository"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
+	"github.com/oogway93/golangArchitecture/internal/utils"
 	"github.com/shopspring/decimal"
 )
 
@@ -67,10 +69,10 @@ func (s *OrderShopService) Create(userID string, requestData *products.Order) {
 	}
 
 	order := s.repo.CreateOrderAndOrderItems(userID, deliveryID, orderItems)
-	go s.autoUpdateStatus(order.ID)
+	go s.autoUpdateStatus(order.UUID.String())
 }
 
-func (s *OrderShopService) autoUpdateStatus(orderID uint) {
+func (s *OrderShopService) autoUpdateStatus(orderID string) {
 	statusUpdates := []struct {
 		status string
 		delay  time.Duration
@@ -80,6 +82,10 @@ func (s *OrderShopService) autoUpdateStatus(orderID uint) {
 		{PickedUp, 50 * time.Minute},
 		{Completed, 50*time.Minute + 1*time.Second},
 	}
+	// orderUUID, err := uuid.FromBytes([]byte(orderID))
+	// if err != nil {
+	// 	log.Fatalf("Cannot convert uuid")
+	// }
 	for _, update := range statusUpdates {
 		time.Sleep(update.delay)
 		s.repo.UpdateOrderStatus(orderID, update.status)
@@ -90,9 +96,60 @@ func (s *OrderShopService) autoUpdateStatus(orderID uint) {
 	}
 }
 func (s *OrderShopService) GetAll(userID string) []map[string]interface{} {
-	result := s.repo.GetAll(userID)
-	return result
+	var orders []map[string]interface{}
+	key := fmt.Sprintf("user:%s::orders", userID)
+	resultOrders, err := s.cache.Get(key)
+	if err == nil {
+		err := utils.Deserialize(resultOrders, &orders)
+		if err != nil {
+			return nil
+		}
+		return orders
+	}
+	orders = s.repo.GetAll(userID)
+	if orders != nil {
+		ordersSerialized, err := utils.Serialize(orders)
+		if err != nil {
+			log.Fatal("serialization incorrect")
+		}
+		err = s.cache.Set(key, ordersSerialized, ttl)
+		if err != nil {
+			log.Fatal("set cache incorrect")
+		}
+		
+		return orders
+	}
+	return nil
+}
+func (s *OrderShopService) remakeOrders(userID string) {
+	var orders []map[string]interface{}
+	key := fmt.Sprintf("user:%s::orders", userID)
+	orders = s.repo.GetAll(userID)
+	if orders != nil {
+		ordersSerialized, err := utils.Serialize(orders)
+		if err != nil {
+			log.Fatal("serialization incorrect")
+		}
+		err = s.cache.Set(key, ordersSerialized, ttl)
+		if err != nil {
+			log.Fatal("set cache incorrect")
+		}		
+	}
 }
 func (s *OrderShopService) Get(orderID string) map[string]interface{}              { return nil }
 func (s *OrderShopService) Update(orderID string, requestData *models.Order) error { return nil }
-func (s *OrderShopService) Delete(orderID string) error                            { return nil }
+func (s *OrderShopService) Delete(userID, orderID string) error {
+	err := s.repo.Delete(orderID)
+	if err != nil {
+		return fmt.Errorf("error in Delete  method category repo postgres")
+	}
+	
+	key := fmt.Sprintf("user:%s::orders", userID)
+	err = s.cache.Delete(key)
+	if err != nil {
+		log.Fatalln("error in Delete method order cache, because haven't find a key from the redis storage")
+	}
+
+	s.remakeOrders(userID)
+	return err
+}

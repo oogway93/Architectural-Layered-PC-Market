@@ -29,15 +29,6 @@ func (s *ProductShopService) Create(categoryID string, requestData *products.Pro
 		Description: requestData.Description,
 	}
 	s.repo.Create(categoryID, productModel)
-	key := fmt.Sprintf("category:%s::product:%s", categoryID, requestData.ProductName)
-	productsSerialized, err := utils.Serialize(productModel)
-	if err != nil {
-		log.Fatal("serialization incorrect")
-	}
-	err = s.cache.Set(key, productsSerialized, ttl)
-	if err != nil {
-		log.Fatal("set cache incorrect")
-	}
 }
 func (s *ProductShopService) GetAll(categoryID string) []map[string]interface{} {
 	var products []map[string]interface{}
@@ -69,12 +60,12 @@ func (s *ProductShopService) Delete(categoryID, productID string) error {
 	if err != nil {
 		return fmt.Errorf("error in Delete  method category cache")
 	}
-	result := s.repo.Delete(categoryID, productID)
+	err = s.repo.Delete(categoryID, productID)
 	if err != nil {
 		return fmt.Errorf("error in Delete  method category repo postgres")
 	}
 
-	return result
+	return err
 }
 func (s *ProductShopService) Get(categoryID, productID string) map[string]interface{} {
 	var product map[string]interface{}

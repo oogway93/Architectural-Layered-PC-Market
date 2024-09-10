@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/oogway93/golangArchitecture/internal/entity/products"
 	"github.com/oogway93/golangArchitecture/internal/entity/user"
+
 	// "github.com/oogway93/golangArchitecture/internal/repository"
 	"github.com/oogway93/golangArchitecture/internal/repository/postgres/models"
 	// "github.com/oogway93/golangArchitecture/internal/service/auth"
@@ -31,7 +32,7 @@ type ServiceOrder interface {
 	GetAll(userID string) []map[string]interface{}
 	Get(orderID string) map[string]interface{}
 	Update(orderID string, requestData *models.Order) error
-	Delete(orderID string) error
+	Delete(userID, orderID string) error
 }
 
 type ServiceUser interface {
