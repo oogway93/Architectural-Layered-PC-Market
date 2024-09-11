@@ -1,0 +1,37 @@
+{"time":"2024-09-11T17:08:28.38010908+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-11T17:08:28.503823367+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-11T17:08:28.50429064+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-11T17:09:18.579584365+03:00","level":"INFO","msg":"Created new product: Intel i7 1222 in category: Processors"}
+{"time":"2024-09-11T17:13:13.543204527+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-11T17:13:13.670699351+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-11T17:13:13.671557104+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-11T17:13:20.883129958+03:00","level":"INFO","msg":"Created new product: Intel 8 1222 in category: Processors"}
+{"time":"2024-09-11T17:17:58.395194632+03:00","level":"INFO","msg":"Created new category: Video"}
+{"time":"2024-09-11T17:19:02.169983646+03:00","level":"INFO","msg":"login ept: oogway9393"}
+{"time":"2024-09-11T17:19:02.176466905+03:00","level":"INFO","msg":"Created new order-delivery"}
+{"time":"2024-09-11T17:19:02.180900203+03:00","level":"INFO","msg":"Created new order"}
+{"time":"2024-09-11T17:19:02.183712169+03:00","level":"INFO","msg":"Created new order items"}
+{"time":"2024-09-11T17:19:41.960169044+03:00","level":"INFO","msg":"Error finding PRODUCTS which making relationships with CategoryID by category_name: &{0xc0003741b0 record not found 0 0xc000582c40 0}"}
+{"time":"2024-09-11T17:23:31.397940098+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-11T17:23:31.520702226+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-11T17:23:31.521404248+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-11T17:24:41.377281189+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-11T17:24:41.50155905+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-11T17:24:41.502363805+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-11T17:24:51.215313732+03:00","level":"INFO","msg":"Created new category: OS"}
+{"time":"2024-09-11T17:36:11.577667906+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-11T17:36:11.699629911+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-11T17:36:11.700386936+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-11T17:36:19.126452732+03:00","level":"INFO","msg":"Created new category: op"}
+{"time":"2024-09-11T17:36:46.643563665+03:00","level":"INFO","msg":"Created new product: Intel 1 1222 in category: Processors"}
+{"time":"2024-09-11T17:37:51.922825402+03:00","level":"INFO","msg":"Restored product: Intel 1 1222"}
+{"time":"2024-09-11T17:39:12.053802689+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-11T17:39:12.173260724+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-11T17:39:12.173927099+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-11T17:39:20.463513425+03:00","level":"INFO","msg":"Created new product: Intel 4 1222 in category: Processors"}
+{"time":"2024-09-11T17:39:57.455017744+03:00","level":"INFO","msg":"Created new product: Intel 233 1222 in category: op"}
+{"time":"2024-09-11T17:40:47.650543526+03:00","level":"INFO","msg":"Created new category: sss"}
+{"time":"2024-09-11T17:42:09.231501905+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-11T17:42:09.361624711+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-11T17:42:09.362268444+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-11T17:42:14.732790845+03:00","level":"INFO","msg":"Created new category: asdasd"}
