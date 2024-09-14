@@ -20,7 +20,7 @@ type Config struct {
 func New(cfg Config) (repository.CacheRepository, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     cfg.Addr,
-		Password: "",
+		Password: cfg.Password,
 		DB:       0,
 	})
 
@@ -32,24 +32,20 @@ func New(cfg Config) (repository.CacheRepository, error) {
 	return &Redis{client}, nil
 }
 
-// Set stores the value in the redis database
 func (r *Redis) Set(key string, value []byte, ttl time.Duration) error {
 	return r.client.Set(key, value, ttl).Err()
 }
 
-// Get retrieves the value from the redis database
 func (r *Redis) Get(key string) ([]byte, error) {
 	res, err := r.client.Get(key).Result()
 	bytes := []byte(res)
 	return bytes, err
 }
 
-// Delete removes the value from the redis database
 func (r *Redis) Delete(key string) error {
 	return r.client.Del(key).Err()
 }
 
-// DeleteByPrefix removes the value from the redis database with the given prefix
 func (r *Redis) DeleteByPrefix(prefix string) error {
 	var cursor uint64
 	var keys []string

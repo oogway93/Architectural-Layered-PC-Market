@@ -2,7 +2,7 @@ package repositoryPostgresShop
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
 	"github.com/shopspring/decimal"
@@ -24,7 +24,7 @@ func (d *OrderShopPostgres) CreateOrderAndOrderItems(userID string, deliveryID u
 	tx := d.db.Begin()
 	result := tx.Where("login = ?", userID).First(&user)
 	if result.Error != nil {
-		log.Printf("Error finding LOGIN from user: %v", result.Error)
+		slog.Warn("Error finding LOGIN from user", "error", result.Error)
 	}
 
 	newOrder := models.Order{
@@ -43,20 +43,20 @@ func (d *OrderShopPostgres) CreateOrderAndOrderItems(userID string, deliveryID u
 
 	result = tx.Create(&newOrder)
 	if result.Error != nil {
-		log.Printf("Error creating new category: %v", result.Error)
+		slog.Warn("Error creating new CATEGORY", "error", result.Error)
 		tx.Rollback()
 	} else {
-		log.Printf("Created new order")
+		slog.Info("Created new order")
 	}
 
 	for _, item := range newItems {
 		item.OrderID = newOrder.ID
 		result := tx.Create(&item)
 		if result.Error != nil {
-			log.Printf("Error creating order item: %v", result.Error)
+			slog.Warn("Error creating ORDER ITEMS", "error", result.Error)
 			tx.Rollback()
 		} else {
-			log.Printf("Created new order items")
+			slog.Info("Created new ORDER ITEMS")
 		}
 	}
 	tx.Commit()
@@ -66,13 +66,13 @@ func (d *OrderShopPostgres) UpdateOrderStatus(orderID string, newStatus string) 
 	var order models.Order
 	result := d.db.Where("uuid = ?", orderID).First(&order)
 	if result.RowsAffected == 0 {
-		log.Fatalf("order not found")
+		slog.Warn("ORDER not found")
 	}
 
 	order.Status = newStatus
 
 	if err := d.db.Save(&order).Error; err != nil {
-		log.Fatalf("failed to save order: %v", err)
+		slog.Warn("Failed to save ORDER", "error", err)
 	}
 }
 
@@ -81,9 +81,9 @@ func (d *OrderShopPostgres) CreateDelivery(newDelivery *models.Delivery) {
 
 	result := tx.Create(&newDelivery)
 	if result.Error != nil {
-		log.Printf("Error creating new order-delivery: %v", result.Error)
+		slog.Warn("Error creating new ORDER-DELIVERY", "error", result.Error)
 	} else {
-		log.Printf("Created new order-delivery")
+		slog.Info("Created new ORDER-DELIVERY")
 	}
 
 	tx.Commit()
@@ -95,7 +95,7 @@ func (d *OrderShopPostgres) LastRow() (uint, error) {
 
 	result := tx.Limit(1).Order("id desc").First(&delivery)
 	if result.Error != nil {
-		return 0, fmt.Errorf("failed to get last inserted order: %w", result.Error)
+		return 0, fmt.Errorf("failed to get last inserted order: %v", result.Error)
 	}
 
 	tx.Commit()
@@ -110,18 +110,18 @@ func (d *OrderShopPostgres) GetAll(userID string) []map[string]interface{} {
 	tx := d.db.Begin()
 	result := tx.Where("login = ?", userID).First(&user)
 	if result.Error != nil {
-		log.Printf("Error finding LOGIN from user: %v", result.Error)
+		slog.Warn("Error finding LOGIN from USER", "error", result.Error)
 	}
 	result = tx.Where("user_id = ?", user.ID).Find(&orders)
 	if result.Error != nil {
-		log.Printf("Error finding records from order: %v", result.Error)
+		slog.Warn("Error finding records from ORDER", "error", result.Error)
 	}
 
-	log.Printf("Found %d orders", len(orders))
+	slog.Info("Found ORDERS", "orderLength", len(orders))
 
 	var resultOrders []map[string]interface{}
 	for _, order := range orders {
-		log.Printf("Processing order: %v", order.ID)
+		slog.Info("Processing order", "orderId", order.ID)
 
 		resultOrder := make(map[string]interface{})
 		resultOrder["status"] = order.Status
@@ -129,16 +129,16 @@ func (d *OrderShopPostgres) GetAll(userID string) []map[string]interface{} {
 
 		result = tx.Preload("Order").Preload("Product").Where("order_id = ?", order.ID).Find(&orderItems)
 		if result.Error != nil {
-			log.Printf("Error finding records from order items: %v", result.Error)
+			slog.Warn("Error finding records from order items", "error", result.Error)
 		}
 
 		var resultOrderItems []map[string]interface{}
 		for _, item := range orderItems {
-			log.Printf("Processing item: %v", item.ID)
+			slog.Info("Processing item", "itemID", item.ID)
 
 			result = tx.Preload("Category").Where("id = ?", item.Product.ID).Find(&product)
 			if result.Error != nil {
-				log.Printf("Error finding records from order items: %v", result.Error)
+				slog.Warn("Error finding records from order items", "error", result.Error)
 			}
 
 			resultOrderItems = append(resultOrderItems, map[string]interface{}{
@@ -154,7 +154,7 @@ func (d *OrderShopPostgres) GetAll(userID string) []map[string]interface{} {
 		resultOrder["order_items"] = resultOrderItems
 		resultOrders = append(resultOrders, resultOrder)
 
-		log.Printf("Added order to resultOrders")
+		slog.Info("Added ORDER to resultOrders")
 	}
 
 	tx.Commit()
@@ -167,7 +167,7 @@ func (d *OrderShopPostgres) Delete(orderID string) error {
 	tx := d.db.Begin()
 	result := tx.Where("uuid = ?", orderID).Delete(&order)
 	if result.Error != nil {
-		log.Fatalf("Error in DELETE method ORDER: %v", result.Error)
+		slog.Warn("Error in DELETE method ORDER", "error", result.Error)
 	}
 	tx.Commit()
 	return result.Error
@@ -178,7 +178,7 @@ func (d *OrderShopPostgres) FetchProductID(productName string) map[string]interf
 
 	result := tx.Where("product_name = ?", productName).First(&product)
 	if result.Error != nil {
-		log.Printf("Error finding product: %v", result.Error)
+		slog.Warn("Error finding PRODUCT", "error", result.Error)
 		tx.Rollback()
 	}
 

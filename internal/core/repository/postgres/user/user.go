@@ -1,7 +1,7 @@
 package repositoryPostgresUser
 
 import (
-	"log"
+	"log/slog"
 	"time"
 
 	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
@@ -24,7 +24,7 @@ func (d *UserPostgres) Create(newUser models.User) {
 	result := tx.Create(&newUser)
 
 	if result.Error != nil {
-		log.Printf("Error creating new user: %v", result.Error)
+		slog.Info("Error creating new USER", "error", result.Error)
 	}
 	tx.Commit()
 }
@@ -35,7 +35,7 @@ func (d *UserPostgres) GetAll() []map[string]interface{} {
 	result := tx.Find(&users)
 
 	if result.Error != nil {
-		log.Printf("Error finding records from user: %v", result.Error)
+		slog.Warn("Error finding records from USER", "error", result.Error)
 	}
 	var resultUsers []map[string]interface{}
 	for _, user := range users {
@@ -52,7 +52,7 @@ func (d *UserPostgres) Get(loginID string) map[string]interface{} {
 	tx := d.db.Begin()
 	result := tx.Where("login = ?", loginID).First(&user)
 	if result.Error != nil {
-		log.Printf("Error finding LOGIN from user: %v", result.Error)
+		slog.Warn("Error finding LOGIN from USER", "error", result.Error)
 		return nil
 	}
 

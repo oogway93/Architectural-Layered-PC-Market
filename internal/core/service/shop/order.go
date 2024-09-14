@@ -2,7 +2,7 @@ package serviceShop
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"time"
 
 	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
@@ -45,7 +45,7 @@ func (s *OrderShopService) Create(userID string, requestData *products.Order) {
 		resultProduct := s.repo.FetchProductID(productItem.ProductRel.ProductName)
 		unitPrice, ok := resultProduct["price"].(decimal.Decimal)
 		if !ok {
-			log.Printf("Failed to convert price to decimal for product %s", productItem.ProductRel.ProductName)
+			slog.Info("Failed to convert price to decimal for PRODUCT", "productName", productItem.ProductRel.ProductName)
 			continue
 		}
 		orderItem := models.OrderItem{
@@ -57,7 +57,7 @@ func (s *OrderShopService) Create(userID string, requestData *products.Order) {
 
 	}
 	if len(orderItems) == 0 {
-		log.Println("No order items found")
+		slog.Info("No order items found")
 		return
 	}
 
@@ -65,7 +65,7 @@ func (s *OrderShopService) Create(userID string, requestData *products.Order) {
 
 	deliveryID, err := s.repo.LastRow()
 	if err != nil {
-		log.Fatalf("Error in getting last row from delivery: %v", err.Error())
+		slog.Warn("Error in getting last row from delivery", "error", err.Error())
 	}
 
 	order := s.repo.CreateOrderAndOrderItems(userID, deliveryID, orderItems)
@@ -107,13 +107,13 @@ func (s *OrderShopService) GetAll(userID string) []map[string]interface{} {
 	if orders != nil {
 		ordersSerialized, err := utils.Serialize(orders)
 		if err != nil {
-			log.Fatal("serialization incorrect")
+			slog.Warn("serialization incorrect")
 		}
 		err = s.cache.Set(key, ordersSerialized, ttl)
 		if err != nil {
-			log.Fatal("set cache incorrect")
+			slog.Warn("set cache incorrect")
 		}
-		
+
 		return orders
 	}
 	return nil
@@ -125,12 +125,12 @@ func (s *OrderShopService) remakeOrders(userID string) {
 	if orders != nil {
 		ordersSerialized, err := utils.Serialize(orders)
 		if err != nil {
-			log.Fatal("serialization incorrect")
+			slog.Warn("serialization incorrect")
 		}
 		err = s.cache.Set(key, ordersSerialized, ttl)
 		if err != nil {
-			log.Fatal("set cache incorrect")
-		}		
+			slog.Warn("set cache incorrect")
+		}
 	}
 }
 func (s *OrderShopService) Get(orderID string) map[string]interface{}              { return nil }
@@ -140,11 +140,11 @@ func (s *OrderShopService) Delete(userID, orderID string) error {
 	if err != nil {
 		return fmt.Errorf("error in Delete  method category repo postgres")
 	}
-	
+
 	key := fmt.Sprintf("user:%s::orders", userID)
 	err = s.cache.Delete(key)
 	if err != nil {
-		log.Fatalln("error in Delete method order cache, because haven't find a key from the redis storage")
+		slog.Warn("error in Delete method order cache, because haven't find a key from the redis storage", "error", err.Error)
 	}
 
 	s.remakeOrders(userID)

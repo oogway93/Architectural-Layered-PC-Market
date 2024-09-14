@@ -35,3 +35,45 @@
 {"time":"2024-09-11T17:42:09.361624711+03:00","level":"INFO","msg":"Successfully migrated the database"}
 {"time":"2024-09-11T17:42:09.362268444+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
 {"time":"2024-09-11T17:42:14.732790845+03:00","level":"INFO","msg":"Created new category: asdasd"}
+{"time":"2024-09-13T17:06:27.830044549+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-13T17:06:28.09057117+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-13T17:06:28.091665023+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-13T17:07:25.700202991+03:00","level":"INFO","msg":"Created new PRODUCT:newProductin CATEGORY","Intel 123 1222":"op"}
+{"time":"2024-09-13T17:09:10.875744737+03:00","level":"INFO","msg":"Created NEW CATEGORY","categoryName":"wasd"}
+{"time":"2024-09-13T17:24:03.779885627+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-13T17:24:04.010853072+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-13T17:24:04.0118856+03:00","level":"ERROR","msg":"Error initializing cache connection","error":"ERR AUTH <password> called without any password configured for the default user. Are you sure your configuration is correct?"}
+{"time":"2024-09-13T17:26:21.828936478+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-13T17:26:22.025537506+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-13T17:26:22.026518561+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-13T17:27:02.225520712+03:00","level":"INFO","msg":"Restored PRODUCT","productName":"Intel 123 1222"}
+{"time":"2024-09-13T17:27:40.546247804+03:00","level":"WARN","msg":"Error finding CATEGORY","error":"record not found"}
+{"time":"2024-09-14T10:34:46.977442772+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-14T10:34:47.124201371+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-14T10:34:47.12511091+03:00","level":"ERROR","msg":"Error initializing cache connection","error":"ERR AUTH <password> called without any password configured for the default user. Are you sure your configuration is correct?"}
+{"time":"2024-09-14T10:43:37.987455034+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-14T10:43:38.119326578+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-14T10:43:38.120159292+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-14T11:27:49.088153902+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-14T11:27:49.222226978+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-14T11:27:49.223105507+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-14T11:27:49.22378038+03:00","level":"ERROR","msg":"Some errors in initialization routes","error":"listen tcp :8080: bind: address already in use"}
+{"time":"2024-09-14T11:28:46.603345272+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-14T11:28:46.735417056+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-14T11:28:46.736519426+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-14T11:28:46.73713675+03:00","level":"ERROR","msg":"Some errors in initialization routes","error":"listen tcp :8080: bind: address already in use"}
+{"time":"2024-09-14T11:29:19.503831575+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-14T11:29:19.633140731+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-14T11:29:19.633952632+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-14T11:32:01.006304009+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-14T11:32:01.138112493+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-14T11:32:01.13891727+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-14T11:33:30.265558201+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-14T11:33:30.396799647+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-14T11:33:30.397790271+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-14T12:07:21.86317601+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-14T12:07:21.994635231+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-14T12:07:21.99566308+03:00","level":"INFO","msg":"Successfully connected to the cache server"}
+{"time":"2024-09-14T12:16:55.542794764+03:00","level":"INFO","msg":"Starting the application","app":"golangArchitecture","env":"production"}
+{"time":"2024-09-14T12:16:55.672820777+03:00","level":"INFO","msg":"Successfully migrated the database"}
+{"time":"2024-09-14T12:16:55.673712366+03:00","level":"INFO","msg":"Successfully connected to the cache server"}

@@ -2,7 +2,7 @@ package utils
 
 import (
 	"errors"
-	"log"
+	"log/slog"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -13,13 +13,13 @@ import (
 type tokenClaims struct {
 	jwt.StandardClaims
 	Login string `json:"login"`
-    Id    uint   `json:"id"`
+	Id    uint   `json:"id"`
 }
 
 func HashPassword(password string) string {
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
-		log.Fatalf("Error in HASHING password: %v", err)
+		slog.Warn("Error in HASHING password", "error", err)
 	}
 	return string(hashPassword)
 }
@@ -27,7 +27,7 @@ func HashPassword(password string) string {
 func CheckHashPassword(hashedPassword, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
-		log.Fatalf("Error in UNHASHING password: %v", err)
+		slog.Warn("Error in UNHASHING password", "error", err.Error)
 		return false
 	}
 	return true
@@ -53,10 +53,9 @@ func ParseToken(accessToken string) (string, error) {
 	return claims.Login, nil
 }
 
-// FIXME: сделать тут так, чтобы можно было получать из jwt токена id юзера, ибо почему то только логин отображается в data. 
+// FIXME: сделать тут так, чтобы можно было получать из jwt токена id юзера, ибо почему то только логин отображается в data.
 func GetUserID(c *gin.Context) (string, error) {
 	id, ok := c.Get("currentUserLogin")
-	log.Printf("login ept: %s", id)
 	if !ok {
 		return "", errors.New("cannot get user's id")
 	}

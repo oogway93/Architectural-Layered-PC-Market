@@ -1,0 +1,74 @@
+services:
+  app:
+    build:
+      dockerfile: ./deploy/app/DockerFile
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - db_net
+    ports:
+      - "8000:8000"
+    restart: on-failure
+
+  postgres:
+    image: postgres
+    container_name: golangArchitecture_postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "${DB_USERNAME}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${DB_NAME}"
+    networks:
+      - db_net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d ${DB_NAME} -U ${DB_USERNAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    env_file: ".env"
+
+  redis:
+    image: redis
+    container_name: golangArchitecture_redis
+    ports:
+      - "6378:6379"
+    volumes:
+      - redis:/data
+    networks:
+      - db_net
+    command: /bin/sh -c "redis-server --requirepass ${REDIS_PASSWORD}"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    env_file:
+      - ".env"
+
+  nginx:
+    image: nginx
+    container_name: golangArchitecture_nginx
+    build: 
+      context: ./deploy/nginx/
+      dockerfile: DockerFile
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    networks:
+      - db_net
+    
+
+volumes:
+  postgres:
+    driver: local
+  redis:
+    driver: local
+  nginx:
+
+networks:
+  db_net:

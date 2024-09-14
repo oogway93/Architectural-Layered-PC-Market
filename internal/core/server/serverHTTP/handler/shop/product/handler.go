@@ -1,7 +1,7 @@
 package handlerShopProduct
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
@@ -82,7 +82,7 @@ func (h *ProductHandler) Update(c *gin.Context) {
 	}
 	err = h.service.Update(categoryID, productID, &newProduct)
 	if err != nil {
-		log.Fatalf("Errors in Update handler: %v", err.Error())
+		slog.Warn("Errors in Update handler","error", err.Error())
 	}
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Category UPDATED successfully",

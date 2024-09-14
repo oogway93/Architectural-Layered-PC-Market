@@ -1,7 +1,7 @@
 package repositoryPostgresShop
 
 import (
-	"log"
+	"log/slog"
 	"time"
 
 	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
@@ -28,13 +28,13 @@ func (d *CategoryShopPostgres) Create(newCategory *models.Category) {
 	if result.Error == nil {
 		rawSQL := `UPDATE categories SET deleted_at = NULL WHERE category_name = ?`
 		tx.Exec(rawSQL, existingCategory.CategoryName)
-		log.Printf("Restored category: %s", categoryName)
+		slog.Info("Restored category", "categoryName", categoryName)
 	} else {
 		result = tx.Create(&newCategory)
 		if result.Error != nil {
-			log.Printf("Error creating new category: %v", result.Error)
+			slog.Warn("Error creating NEW CATEGORY", "error", result.Error)
 		} else {
-			log.Printf("Created new category: %s", categoryName)
+			slog.Info("Created NEW CATEGORY", "categoryName", categoryName)
 		}
 	}
 	tx.Commit()
@@ -48,13 +48,13 @@ func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 	result := tx.Find(&categories)
 
 	if result.Error != nil {
-		log.Printf("Error finding records from category: %v", result.Error)
+		slog.Warn("Error finding records from CATEGORY", "error", result.Error)
 	}
 	var resultCategories []map[string]interface{}
 	for _, category := range categories {
 		result := tx.Where("category_id = ? AND deleted_at IS NULL", category.ID).Find(&products)
 		if result.Error != nil {
-			log.Printf("Error finding records from product: %v", result.Error)
+			slog.Warn("Error finding records from PRODUCT", "error", result.Error)
 		}
 
 		var resultProducts []map[string]interface{}
@@ -80,6 +80,7 @@ func (d *CategoryShopPostgres) Delete(categoryID string) error {
 	tx := d.db.Begin()
 	result := tx.Where("category_name = ?", categoryID).Delete(&category)
 	if result.Error != nil {
+		slog.Warn("Error in category's deleting method", "error", result.Error)
 		return result.Error
 	}
 	tx.Commit()
@@ -92,12 +93,12 @@ func (d *CategoryShopPostgres) Get(categoryID string) map[string]interface{} {
 	tx := d.db.Begin()
 	result := tx.Where("category_name = ?", categoryID).First(&category)
 	if result.Error != nil {
-		log.Fatalf("Error finding by category_name: %v", result)
+		slog.Warn("Error finding by CATEGORY_NAME", "error", result.Error)
 	}
 
 	res := tx.Where("category_id = ?", category.ID).First(&products)
 	if res.Error != nil {
-		log.Fatalf("Error finding PRODUCTS which making relationships with CategoryID by category_name: %v", res)
+		slog.Warn("Error finding PRODUCTS which making relationships with CategoryID by CATEGORY_NAME", "error", res.Error)
 	}
 
 	var resultProducts []map[string]interface{}
@@ -122,6 +123,7 @@ func (d *CategoryShopPostgres) Update(categoryID string, newCategory models.Cate
 	tx := d.db.Begin()
 	result := tx.Where("category_name = ? AND deleted_at IS NULL", categoryID).First(&category)
 	if result.Error != nil {
+		slog.Warn("Error in category's deleting method", "error", result.Error)
 		return result.Error
 	}
 	category.CategoryName = newCategory.CategoryName

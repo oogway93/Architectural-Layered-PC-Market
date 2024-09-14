@@ -2,7 +2,7 @@ package serviceShop
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
 	"github.com/oogway93/golangArchitecture/internal/core/repository"
@@ -45,11 +45,11 @@ func (s *ProductShopService) GetAll(categoryID string) []map[string]interface{} 
 
 	productsSerialized, err := utils.Serialize(products)
 	if err != nil {
-		log.Fatal("serialization incorrect")
+		slog.Warn("serialization incorrect")
 	}
 	err = s.cache.Set(key, productsSerialized, ttl)
 	if err != nil {
-		log.Fatal("set cache incorrect")
+		slog.Warn("set cache incorrect")
 	}
 
 	return products
@@ -121,7 +121,7 @@ func (s *ProductShopService) Update(categoryID, productID string, requestData *p
 	newKey := fmt.Sprintf("category:%s::product:%s", resultProduct["category_name"], resultProduct["product_name"])
 	err = s.cache.Set(newKey, productSerialized, ttl)
 	if err != nil {
-		log.Fatal("set cache incorrect")
+		slog.Warn("set cache incorrect")
 	}
 	return nil
 }

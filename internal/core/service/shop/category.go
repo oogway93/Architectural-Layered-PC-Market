@@ -2,7 +2,7 @@ package serviceShop
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"time"
 
 	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
@@ -122,7 +122,7 @@ func (s *CategoryShopService) Update(categoryID string, requestData *products.Ca
 	newKey := fmt.Sprintf("category:%s", requestData.CategoryName)
 	err = s.cache.Set(newKey, categorySerialized, ttl)
 	if err != nil {
-		log.Fatal("set cache incorrect")
+		slog.Warn("set cache incorrect", "error", err.Error)
 	}
 	return nil
 

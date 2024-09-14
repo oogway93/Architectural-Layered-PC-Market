@@ -2,7 +2,7 @@ package repositoryPostgresShop
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"time"
 
 	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
@@ -25,7 +25,7 @@ func (d *ProductShopPostgres) GetByCategoryId(categoryID uint) string {
 	var existingCategory models.Category
 	result := tx.Unscoped().Where("id = ?", categoryID).First(&existingCategory)
 	if result.Error != nil {
-		log.Printf("Error finding records from category: %v", result.Error)
+		slog.Warn("Error finding records from CATEGORY", "error", result.Error)
 	}
 	tx.Commit()
 	return existingCategory.CategoryName
@@ -39,27 +39,27 @@ func (d *ProductShopPostgres) Create(categoryID string, newProduct *models.Produ
 	if check.Error == nil {
 		rawSQL := `UPDATE products SET deleted_at = NULL WHERE product_name = ?`
 		tx.Exec(rawSQL, checkingProduct.ProductName)
-		log.Printf("Restored product: %s", newProduct.ProductName)
+		slog.Info("Restored PRODUCT", "productName", newProduct.ProductName)
 	} else {
 		if check.RowsAffected == 0 {
 			var existingCategory models.Category
 			result := tx.Where("category_name = ?", categoryID).First(&existingCategory)
-	
+
 			if result.Error != nil {
-				log.Printf("Error finding category: %v", result.Error)
+				slog.Warn("Error finding CATEGORY", "error", result.Error)
 				tx.Rollback()
-				return fmt.Errorf("failed to find category")
+				return fmt.Errorf("failed to find CATEGORY")
 			}
-	
+
 			newProduct.CategoryID = existingCategory.ID
 			result = tx.Create(&newProduct)
 			if result.Error != nil {
-				log.Printf("Error creating new product: %v", result.Error)
+				slog.Warn("Error creating new PRODUCT: %v", "error", result.Error)
 				tx.Rollback()
-				return fmt.Errorf("failed to create product")
+				return fmt.Errorf("failed to create PRODUCT")
 			}
-	
-			log.Printf("Created new product: %s in category: %s", newProduct.ProductName, existingCategory.CategoryName)
+
+			slog.Info("Created new PRODUCT:"+"newProduct"+"in CATEGORY", newProduct.ProductName, existingCategory.CategoryName)
 		}
 	}
 
@@ -74,12 +74,12 @@ func (d *ProductShopPostgres) GetAll(categoryID string) []map[string]interface{}
 	getCategoryID := tx.Where("category_name = ?", categoryID).First(&category)
 
 	if getCategoryID.Error != nil {
-		log.Printf("Error finding records from category: %v", getCategoryID.Error)
+		slog.Warn("Error finding records from CATEGORY", "error", getCategoryID.Error)
 	}
 
 	result := tx.Where("category_id = ?", category.ID).Find(&products)
 	if result.Error != nil {
-		log.Printf("Error finding records from product: %v", result.Error)
+		slog.Warn("Error finding records from PRODUCT", "error", result.Error)
 	}
 	var resultProducts []map[string]interface{}
 	for _, product := range products {
@@ -108,6 +108,7 @@ func (d *ProductShopPostgres) Delete(categoryID string, productID string) error 
 
 	result := tx.Where("product_name = ?", productID).Delete(&product)
 	if result.Error != nil {
+		slog.Warn("Error in products's deleting method", "error", result.Error)
 		return result.Error
 	}
 	tx.Commit()
@@ -121,12 +122,12 @@ func (d *ProductShopPostgres) Get(categoryID string, productID string) map[strin
 	getCategoryID := tx.Where("category_name = ?", categoryID).First(&category)
 
 	if getCategoryID.Error != nil {
-		log.Printf("Error finding records from category: %v", getCategoryID.Error)
+		slog.Warn("Error finding records from category", "error", getCategoryID.Error)
 	}
 
 	result := tx.Where("category_id = ? AND product_name = ?", category.ID, productID).First(&product)
 	if result.Error != nil {
-		log.Printf("Error finding records from product: %v", result.Error)
+		slog.Warn("Error finding records from product", "error", result.Error)
 	}
 	resultProduct := map[string]interface{}{
 		"uuid":          product.UUID,
@@ -152,7 +153,7 @@ func (d *ProductShopPostgres) Update(newCategoryName, productID string, newProdu
 		getCategory := tx.Where("category_name = ?", newCategoryName).First(&category)
 
 		if getCategory.Error != nil {
-			log.Printf("Error finding records from category: %v", getCategory.Error)
+			slog.Warn("Error finding records from CATEGORY", "error", getCategory.Error)
 		}
 		product.CategoryID = category.ID
 	}
@@ -169,7 +170,6 @@ func (d *ProductShopPostgres) Update(newCategoryName, productID string, newProdu
 	product.UpdatedAt = time.Now()
 	result = tx.Save(&product)
 	tx.Commit()
-	log.Printf("asdsadsad   %v\n\n", product.Category.CategoryName)
 	resultProduct := map[string]interface{}{
 		"uuid":          product.UUID,
 		"categoryID":    product.CategoryID,
