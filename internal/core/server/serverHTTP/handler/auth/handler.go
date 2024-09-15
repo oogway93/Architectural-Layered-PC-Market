@@ -1,7 +1,7 @@
 package handlerAuth
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
@@ -16,7 +16,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	var authInput user.AuthInput
 
 	if err := c.BindJSON(&authInput); err != nil {
-		log.Fatalf("Error LOGIN handler: %v", err.Error())
+		slog.Warn("Error LOGIN handler", "error", err.Error())
 	}
 
 	result := h.service.Login(&authInput)
