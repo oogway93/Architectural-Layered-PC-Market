@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -23,9 +24,10 @@ type (
 
 	// Redis contains all the environment variables for the cache service
 	Redis struct {
-		Host     string
-		Port     string
-		Password string
+		Host       string
+		Port       string
+		Password   string
+		Expiration int
 	}
 	// Database contains all the environment variables for the database
 	DB struct {
@@ -53,7 +55,7 @@ func New() (*Container, error) {
 			return nil, err
 		}
 	}
-
+	redis_expiration, _ := strconv.Atoi(os.Getenv("REDIS_EXPIRATION"))
 	app := &App{
 		Name:    os.Getenv("APP_NAME"),
 		Env:     os.Getenv("APP_ENV"),
@@ -61,9 +63,10 @@ func New() (*Container, error) {
 	}
 
 	redis := &Redis{
-		Host:     os.Getenv("REDIS_HOST"),
-		Port:     os.Getenv("REDIS_PORT"),
-		Password: os.Getenv("REDIS_PASSWORD"),
+		Host:       os.Getenv("REDIS_HOST"),
+		Port:       os.Getenv("REDIS_PORT"),
+		Password:   os.Getenv("REDIS_PASSWORD"),
+		Expiration: redis_expiration,
 	}
 
 	db := &DB{

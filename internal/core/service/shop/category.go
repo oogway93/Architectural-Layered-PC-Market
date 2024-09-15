@@ -3,7 +3,6 @@ package serviceShop
 import (
 	"fmt"
 	"log/slog"
-	"time"
 
 	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
 	"github.com/oogway93/golangArchitecture/internal/core/repository"
@@ -11,9 +10,7 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/core/utils"
 )
 
-const (
-	ttl = 5 * time.Minute
-)
+
 
 type CategoryShopService struct {
 	repo  repository.CategoryRepository
@@ -48,16 +45,18 @@ func (s *CategoryShopService) GetAll() []map[string]interface{} {
 	}
 	categories = s.repo.GetAll()
 
-	categoriesSerialized, err := utils.Serialize(categories)
-	if err != nil {
-		return nil
-	}
+	if len(categories) != 0 {
+		categoriesSerialized, err := utils.Serialize(categories)
+		if err != nil {
+			slog.Warn("serialization incorrect")
+		}
 
-	err = s.cache.Set(key, categoriesSerialized, ttl)
-	if err != nil {
-		return nil
-	}
+		err = s.cache.Set(key, categoriesSerialized)
+		if err != nil {
+			slog.Warn("set cache incorrect")
+		}
 
+	}
 	return categories
 }
 func (s *CategoryShopService) Get(categoryID string) map[string]interface{} {
@@ -79,7 +78,7 @@ func (s *CategoryShopService) Get(categoryID string) map[string]interface{} {
 		return nil
 	}
 
-	err = s.cache.Set(key, categoriesSerialized, ttl)
+	err = s.cache.Set(key, categoriesSerialized)
 	if err != nil {
 		return nil
 	}
@@ -94,7 +93,8 @@ func (s *CategoryShopService) Delete(categoryID string) error {
 	err = s.repo.Delete(categoryID)
 
 	if err != nil {
-		return fmt.Errorf("error in Delete  method category repo postgres")	}
+		return fmt.Errorf("error in Delete  method category repo postgres")
+	}
 
 	return nil
 }
@@ -102,7 +102,7 @@ func (s *CategoryShopService) Update(categoryID string, requestData *products.Ca
 	categoryModel := models.Category{
 		CategoryName: requestData.CategoryName,
 	}
-	
+
 	err := s.repo.Update(categoryID, categoryModel)
 	if err != nil {
 		return fmt.Errorf("error in Update method category repo")
@@ -120,7 +120,7 @@ func (s *CategoryShopService) Update(categoryID string, requestData *products.Ca
 	}
 
 	newKey := fmt.Sprintf("category:%s", requestData.CategoryName)
-	err = s.cache.Set(newKey, categorySerialized, ttl)
+	err = s.cache.Set(newKey, categorySerialized)
 	if err != nil {
 		slog.Warn("set cache incorrect", "error", err.Error)
 	}

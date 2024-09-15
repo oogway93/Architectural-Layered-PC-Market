@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"time"
-
 	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
 )
 
@@ -47,15 +45,10 @@ type AuthRepository interface {
 }
 
 type CacheRepository interface {
-	// Set stores the value in the cache
-	Set(key string, value []byte, ttl time.Duration) error
-	// Get retrieves the value from the cache
+	Set(key string, value []byte) error
 	Get(key string) ([]byte, error)
-	// Delete removes the value from the cache
 	Delete(key string) error
-	// DeleteByPrefix removes the value from the cache with the given prefix
 	DeleteByPrefix(prefix string) error
-	// Close closes the connection to the cache server
 	Close() error
 }
 

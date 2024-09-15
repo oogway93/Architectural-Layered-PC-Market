@@ -42,16 +42,16 @@ func (s *ProductShopService) GetAll(categoryID string) []map[string]interface{} 
 		return products
 	}
 	products = s.repo.GetAll(categoryID)
-
-	productsSerialized, err := utils.Serialize(products)
-	if err != nil {
-		slog.Warn("serialization incorrect")
+	if len(products) != 0 {
+		productsSerialized, err := utils.Serialize(products)
+		if err != nil {
+			slog.Warn("serialization incorrect")
+		}
+		err = s.cache.Set(key, productsSerialized)
+		if err != nil {
+			slog.Warn("set cache incorrect")
+		}
 	}
-	err = s.cache.Set(key, productsSerialized, ttl)
-	if err != nil {
-		slog.Warn("set cache incorrect")
-	}
-
 	return products
 }
 func (s *ProductShopService) Delete(categoryID, productID string) error {
@@ -86,7 +86,7 @@ func (s *ProductShopService) Get(categoryID, productID string) map[string]interf
 		return nil
 	}
 
-	err = s.cache.Set(key, productSerialized, ttl)
+	err = s.cache.Set(key, productSerialized)
 	if err != nil {
 		return nil
 	}
@@ -119,7 +119,7 @@ func (s *ProductShopService) Update(categoryID, productID string, requestData *p
 		return fmt.Errorf("error in Serialization Update method category cache")
 	}
 	newKey := fmt.Sprintf("category:%s::product:%s", resultProduct["category_name"], resultProduct["product_name"])
-	err = s.cache.Set(newKey, productSerialized, ttl)
+	err = s.cache.Set(newKey, productSerialized)
 	if err != nil {
 		slog.Warn("set cache incorrect")
 	}

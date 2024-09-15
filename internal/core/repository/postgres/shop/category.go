@@ -52,7 +52,7 @@ func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 	}
 	var resultCategories []map[string]interface{}
 	for _, category := range categories {
-		result := tx.Where("category_id = ? AND deleted_at IS NULL", category.ID).Find(&products)
+		result := tx.Where("category_id = ?", category.ID).Find(&products)
 		if result.Error != nil {
 			slog.Warn("Error finding records from PRODUCT", "error", result.Error)
 		}
@@ -72,6 +72,7 @@ func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 		})
 	}
 	tx.Commit()
+
 	return resultCategories
 }
 

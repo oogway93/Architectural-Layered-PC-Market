@@ -5,6 +5,7 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -51,7 +52,6 @@ func main() {
 		DBName:   config.DB.Name,
 		SSLMode:  config.DB.SSLMode,
 	})
-
 	db.AutoMigrate(&models.User{}, &models.Category{}, &models.Product{}, &models.Order{}, &models.Delivery{}, &models.OrderItem{})
 	slog.Info("Successfully migrated the database")
 
@@ -59,6 +59,7 @@ func main() {
 	cache, err := repositoryRedis.New(repositoryRedis.Config{
 		Addr:     addr,
 		Password: config.Redis.Password,
+		Expiration: time.Duration(config.Redis.Expiration) * time.Minute,
 	})
 	if err != nil {
 		slog.Error("Error initializing cache connection", "error", err)

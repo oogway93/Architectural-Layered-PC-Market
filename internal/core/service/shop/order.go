@@ -109,7 +109,7 @@ func (s *OrderShopService) GetAll(userID string) []map[string]interface{} {
 		if err != nil {
 			slog.Warn("serialization incorrect")
 		}
-		err = s.cache.Set(key, ordersSerialized, ttl)
+		err = s.cache.Set(key, ordersSerialized)
 		if err != nil {
 			slog.Warn("set cache incorrect")
 		}
@@ -127,7 +127,7 @@ func (s *OrderShopService) remakeOrders(userID string) {
 		if err != nil {
 			slog.Warn("serialization incorrect")
 		}
-		err = s.cache.Set(key, ordersSerialized, ttl)
+		err = s.cache.Set(key, ordersSerialized)
 		if err != nil {
 			slog.Warn("set cache incorrect")
 		}

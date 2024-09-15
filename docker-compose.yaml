@@ -56,7 +56,7 @@ services:
       context: ./deploy/nginx/
       dockerfile: DockerFile
     ports:
-      - "80:80"
+      - "81:80"
     depends_on:
       - app
     networks:

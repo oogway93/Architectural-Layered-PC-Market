@@ -9,11 +9,13 @@ import (
 
 type Redis struct {
 	client *redis.Client
+	Config
 }
 
 type Config struct {
 	Addr string
 	Password string
+	Expiration time.Duration
 }
 
 // New creates a new instance of Redis
@@ -29,11 +31,11 @@ func New(cfg Config) (repository.CacheRepository, error) {
 		return nil, err
 	}
 
-	return &Redis{client}, nil
+	return &Redis{client, cfg}, nil
 }
 
-func (r *Redis) Set(key string, value []byte, ttl time.Duration) error {
-	return r.client.Set(key, value, ttl).Err()
+func (r *Redis) Set(key string, value []byte) error {
+	return r.client.Set(key, value, r.Config.Expiration).Err()
 }
 
 func (r *Redis) Get(key string) ([]byte, error) {
