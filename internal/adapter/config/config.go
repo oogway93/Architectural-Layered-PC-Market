@@ -48,9 +48,14 @@ type (
 )
 
 // New creates a new container instance
-func New() (*Container, error) {
-	if os.Getenv("APP_ENV") != "production" {
-		err := godotenv.Load()
+func New(APP_ENV string) (*Container, error) {
+	if APP_ENV == "production" {
+		err := godotenv.Load(".env.production")
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err := godotenv.Load(".env.development")
 		if err != nil {
 			return nil, err
 		}

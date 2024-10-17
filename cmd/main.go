@@ -1,14 +1,13 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"log"
 	"log/slog"
 	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/oogway93/golangArchitecture/internal/adapter/config"
 	"github.com/oogway93/golangArchitecture/internal/adapter/logger"
@@ -27,8 +26,11 @@ import (
 )
 
 func main() {
+	env := flag.String("env", "development", "env's status")
+	flag.Parse()
 	gin.SetMode(gin.DebugMode)
-	config, err := config.New()
+	APP_ENV := *env
+	config, err := config.New(APP_ENV)
 	if err != nil {
 		slog.Error("Error loading environment variables", "error", err)
 		os.Exit(1)
@@ -37,13 +39,8 @@ func main() {
 	// Set logger
 	logger.Set(config.App)
 
-	slog.Info("Starting the application", "app", config.App.Name, "env", config.App.Env)
-
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file",
-			err)
-	}
-
+	slog.Info("Starting the application", "app", config.App.Name, "env", APP_ENV)
+	
 	db := repositoryPostgres.DatabaseConnection(repositoryPostgres.Config{
 		Username: config.DB.User,
 		Password: config.DB.Password,
