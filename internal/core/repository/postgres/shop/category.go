@@ -23,8 +23,7 @@ func (d *CategoryShopPostgres) Create(newCategory *models.Category) {
 	categoryName := newCategory.CategoryName
 
 	var existingCategory models.Category
-	result := tx.Unscoped().Where("category_name = ?", categoryName).First(&existingCategory)
-
+	result := tx.Where("category_name = ?", categoryName).First(&existingCategory)
 	if result.Error == nil {
 		rawSQL := `UPDATE categories SET deleted_at = NULL WHERE category_name = ?`
 		tx.Exec(rawSQL, existingCategory.CategoryName)

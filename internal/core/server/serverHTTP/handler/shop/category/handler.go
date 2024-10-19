@@ -1,4 +1,4 @@
-package handlerShopCategory
+package HTTPShopCategoryHandler
 
 import (
 	"net/http"
@@ -8,40 +8,25 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/core/errors/data/response"
 )
 
-func (h *CategoryHandler) Create(c *gin.Context) {
-	var newCategory products.Category
-
-	err := c.BindJSON(&newCategory)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON payload"})
-		return
-	}
-	h.service.Create(&newCategory)
-
-	webResponse := response.WebResponse{
-		Code:   http.StatusCreated,
-		Status: "Ok",
-		Data:   nil,
-	}
-
-	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusCreated, webResponse)
+type TemplateData struct {
+	Categories []products.Category
 }
 
-func (h *CategoryHandler) GetAll(c *gin.Context) {
+func (h *HTTPCategoryHandler) GetAll(c *gin.Context) {
+	var categories []products.Category
 	result := h.service.GetAll()
+	for _, category := range result {
+		category_name := products.Category{
+			CategoryName: category["category_name"].(string),
+		}
 
-	webResponse := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: "Ok",
-		Data:   result,
+		categories = append(categories, category_name)
 	}
-
-	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, webResponse)
+	templateData := &TemplateData{Categories: categories}
+	c.HTML(http.StatusOK, "categories.html", templateData)
 }
 
-func (h *CategoryHandler) Get(c *gin.Context) {
+func (h *HTTPCategoryHandler) Get(c *gin.Context) {
 	categoryID := c.Param("category")
 	result := h.service.Get(categoryID)
 	webResponse := response.WebResponse{
@@ -52,30 +37,4 @@ func (h *CategoryHandler) Get(c *gin.Context) {
 
 	c.Header("Content-Type", "application/json")
 	c.JSON(http.StatusOK, webResponse)
-}
-func (h *CategoryHandler) Delete(c *gin.Context) {
-	categoryID := c.Param("category")
-	result := h.service.Delete(categoryID)
-	if result != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "DELETE method doesn't work",
-		})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Category DELETED successfully",
-	})
-}
-func (h *CategoryHandler) Update(c *gin.Context) {
-	var newCategory products.Category
-	categoryID := c.Param("category")
-	err := c.BindJSON(&newCategory)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON payload"})
-		return
-	}
-	h.service.Update(categoryID, &newCategory)
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "Category UPDATED successfully",
-	})
 }

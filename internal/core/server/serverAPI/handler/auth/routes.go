@@ -15,7 +15,7 @@ func NewAuthHandler(service service.ServiceAuth) *AuthHandler {
 	}
 }
 
-func (h *AuthHandler) AuthHandlerRoutes(router *gin.Engine) *gin.RouterGroup {
+func (h *AuthHandler) AuthHandlerRoutes(router *gin.RouterGroup) *gin.RouterGroup {
 	auth := router.Group("/user/auth")
 	{
 		auth.POST("/login", h.Login)

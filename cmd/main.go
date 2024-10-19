@@ -12,13 +12,13 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/adapter/config"
 	"github.com/oogway93/golangArchitecture/internal/adapter/logger"
 	repositoryPostgres "github.com/oogway93/golangArchitecture/internal/core/repository/postgres"
-	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/auth"
+	repositoryPostgresAuth "github.com/oogway93/golangArchitecture/internal/core/repository/postgres/auth"
 	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
 	repositoryPostgresShop "github.com/oogway93/golangArchitecture/internal/core/repository/postgres/shop"
 	repositoryPostgresUser "github.com/oogway93/golangArchitecture/internal/core/repository/postgres/user"
 	repositoryRedis "github.com/oogway93/golangArchitecture/internal/core/repository/redis"
 
-	HTTP "github.com/oogway93/golangArchitecture/internal/core/server/serverHTTP"
+	Server "github.com/oogway93/golangArchitecture/internal/core/server"
 
 	serviceAuth "github.com/oogway93/golangArchitecture/internal/core/service/auth"
 	serviceShop "github.com/oogway93/golangArchitecture/internal/core/service/shop"
@@ -40,7 +40,7 @@ func main() {
 	logger.Set(config.App)
 
 	slog.Info("Starting the application", "app", config.App.Name, "env", APP_ENV)
-	
+
 	db := repositoryPostgres.DatabaseConnection(repositoryPostgres.Config{
 		Username: config.DB.User,
 		Password: config.DB.Password,
@@ -54,8 +54,8 @@ func main() {
 
 	addr := fmt.Sprintf("%s:%s", config.Redis.Host, config.Redis.Port)
 	cache, err := repositoryRedis.New(repositoryRedis.Config{
-		Addr:     addr,
-		Password: config.Redis.Password,
+		Addr:       addr,
+		Password:   config.Redis.Password,
 		Expiration: time.Duration(config.Redis.Expiration) * time.Minute,
 	})
 	if err != nil {
@@ -85,9 +85,8 @@ func main() {
 	authRepo := repositoryPostgresAuth.NewRepositoryAuth(db)
 	authService := serviceAuth.NewServiceAuth(authRepo, cache)
 
-	router := HTTP.SetupRouter(categoryService, productService, orderService, userService, authService)
-
-	server := new(HTTP.Server)
+	router := Server.SetupRouter(categoryService, productService, orderService, userService, authService)
+	server := new(Server.Server)
 	if err := server.Run(config.HTTP.Port, router); err != nil {
 		slog.Error("Some errors in initialization routes", "error", err)
 	}

@@ -15,7 +15,7 @@ func NewUserHandler(service service.ServiceUser) *UserHandler {
 	}
 }
 
-func (h *UserHandler) UserHandlerRoutes(router *gin.Engine) *gin.RouterGroup {
+func (h *UserHandler) UserHandlerRoutes(router *gin.RouterGroup) *gin.RouterGroup {
 	user := router.Group("/user")
 	{
 		user.GET("/", h.GetAll)
