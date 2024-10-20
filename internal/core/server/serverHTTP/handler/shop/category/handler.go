@@ -1,15 +1,20 @@
 package HTTPShopCategoryHandler
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
-	"github.com/oogway93/golangArchitecture/internal/core/errors/data/response"
+	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
+	"github.com/shopspring/decimal"
+	// "github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
 )
 
 type TemplateData struct {
-	Categories []products.Category
+	Categories       []products.Category
+	CategoryProducts products.CategoryProducts
 }
 
 func (h *HTTPCategoryHandler) GetAll(c *gin.Context) {
@@ -29,12 +34,33 @@ func (h *HTTPCategoryHandler) GetAll(c *gin.Context) {
 func (h *HTTPCategoryHandler) Get(c *gin.Context) {
 	categoryID := c.Param("category")
 	result := h.service.Get(categoryID)
-	webResponse := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: "Ok",
-		Data:   result,
+	var categoryProduct []models.Product
+	if sliceOfInterfaces, ok := result["products"].([]interface{}); ok {
+		for _, productInterface := range sliceOfInterfaces {
+			if productMap, ok := productInterface.(map[string]interface{}); ok {
+				price, err := decimal.NewFromString(productMap["price"].(string))
+				if err != nil {
+					slog.Info("Incorrect type for Price", "error", err)
+				}
+				product := models.Product{
+					UUID:        uuid.MustParse(productMap["uuid"].(string)),
+					ProductName: productMap["product_name"].(string),
+					Description: productMap["description"].(string),
+					Price:       price,
+					Category:    models.Category{CategoryName: result["category_name"].(string)},
+				}
+				categoryProduct = append(categoryProduct, product)
+			} else {
+				slog.Warn("Error: Unexpected type in products slice. Expected map[string]interface{}, got %T", productInterface)
+			}
+		}
+	} else {
+		slog.Info("Error: Unexpected type for products. Expected []interface{}, got %T", result["products"])
 	}
-
-	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, webResponse)
+	categoryProducts := products.CategoryProducts{
+		CategoryName: result["category_name"].(string),
+		Products:     categoryProduct,
+	}
+	templateData := &TemplateData{CategoryProducts: categoryProducts}
+	c.HTML(http.StatusOK, "category.html", templateData)
 }

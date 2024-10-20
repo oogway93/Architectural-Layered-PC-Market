@@ -96,7 +96,7 @@ func (d *CategoryShopPostgres) Get(categoryID string) map[string]interface{} {
 		slog.Warn("Error finding by CATEGORY_NAME", "error", result.Error)
 	}
 
-	res := tx.Where("category_id = ?", category.ID).First(&products)
+	res := tx.Where("category_id = ?", category.ID).Find(&products)
 	if res.Error != nil {
 		slog.Warn("Error finding PRODUCTS which making relationships with CategoryID by CATEGORY_NAME", "error", res.Error)
 	}
