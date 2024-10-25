@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
+	"github.com/oogway93/golangArchitecture/internal/core/entity/API/shop"
 	"github.com/oogway93/golangArchitecture/internal/core/repository"
 	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
 	"github.com/oogway93/golangArchitecture/internal/core/utils"
@@ -22,7 +22,7 @@ func NewServiceShopProduct(repo repository.ProductRepository, cache repository.C
 	}
 }
 
-func (s *ProductShopService) Create(categoryID string, requestData *products.Product) {
+func (s *ProductShopService) Create(categoryID string, requestData *productsAPI.Product) {
 	productModel := models.Product{
 		ProductName: requestData.ProductName,
 		Price:       requestData.Price,
@@ -91,7 +91,7 @@ func (s *ProductShopService) Delete(categoryID, productID string) error {
 
 	return err
 }
-func (s *ProductShopService) Get(categoryID, productID string) map[string]interface{} {
+func (s *ProductShopService) Get(reqFrom, categoryID, productID string) map[string]interface{} {
 	var product map[string]interface{}
 	key := fmt.Sprintf("category:%s::product:%s", categoryID, productID)
 	cachedProduct, err := s.cache.Get(key)
@@ -116,7 +116,7 @@ func (s *ProductShopService) Get(categoryID, productID string) map[string]interf
 	}
 	return product
 }
-func (s *ProductShopService) Update(categoryID, productID string, requestData *products.Product) error {
+func (s *ProductShopService) Update(categoryID, productID string, requestData *productsAPI.Product) error {
 	productModel := models.Product{
 		ProductName: requestData.ProductName,
 		Price:       requestData.Price,

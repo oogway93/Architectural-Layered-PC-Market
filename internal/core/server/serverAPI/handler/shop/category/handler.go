@@ -2,13 +2,14 @@ package handlerShopCategory
 
 import (
 	"net/http"
+
 	"github.com/gin-gonic/gin"
-	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
+	"github.com/oogway93/golangArchitecture/internal/core/entity/API/shop"
 	"github.com/oogway93/golangArchitecture/internal/core/errors/data/response"
 )
 
 func (h *CategoryHandler) Create(c *gin.Context) {
-	var newCategory products.Category
+	var newCategory productsAPI.Category
 
 	err := c.BindJSON(&newCategory)
 	if err != nil {
@@ -28,7 +29,7 @@ func (h *CategoryHandler) Create(c *gin.Context) {
 }
 
 func (h *CategoryHandler) GetAll(c *gin.Context) {
-	result := h.service.GetAll()
+	_, result := h.service.GetAll("API")
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",
@@ -41,7 +42,7 @@ func (h *CategoryHandler) GetAll(c *gin.Context) {
 
 func (h *CategoryHandler) Get(c *gin.Context) {
 	categoryID := c.Param("category")
-	result := h.service.Get(categoryID)
+	_, result := h.service.Get("API", categoryID)
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",
@@ -65,7 +66,7 @@ func (h *CategoryHandler) Delete(c *gin.Context) {
 	})
 }
 func (h *CategoryHandler) Update(c *gin.Context) {
-	var newCategory products.Category
+	var newCategory productsAPI.Category
 	categoryID := c.Param("category")
 	err := c.BindJSON(&newCategory)
 	if err != nil {

@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
+	"github.com/oogway93/golangArchitecture/internal/core/entity/API/shop"
 	"github.com/oogway93/golangArchitecture/internal/core/repository"
 	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
 	"github.com/oogway93/golangArchitecture/internal/core/utils"
@@ -31,7 +31,7 @@ func NewServiceShopOrder(repo repository.OrderRepository, cache repository.Cache
 	}
 }
 
-func (s *OrderShopService) Create(userID string, requestData *products.Order) {
+func (s *OrderShopService) Create(userID string, requestData *productsAPI.Order) {
 	deliveryModel := models.Delivery{
 		FullName:      requestData.DeliveryRel.FullName,
 		Postcode:      requestData.DeliveryRel.Postcode,

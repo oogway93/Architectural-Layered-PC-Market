@@ -1,4 +1,4 @@
-package products
+package productsAPI
 
 import "github.com/shopspring/decimal"
 

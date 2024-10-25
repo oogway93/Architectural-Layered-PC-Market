@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
+	"github.com/oogway93/golangArchitecture/internal/core/entity/API/shop"
 	"github.com/oogway93/golangArchitecture/internal/core/errors/data/response"
 	"github.com/oogway93/golangArchitecture/internal/core/utils"
 )
 
 func (h *OrderHandler) Create(c *gin.Context) {
-	var order products.Order
-	
+	var order productsAPI.Order
+
 	if err := c.BindJSON(&order); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON payload"})
 		return
@@ -24,7 +24,7 @@ func (h *OrderHandler) Create(c *gin.Context) {
 		})
 	}
 	h.service.Create(userID, &order)
-	
+
 	webResponse := response.WebResponse{
 		Code:   http.StatusCreated,
 		Status: "Ok",
@@ -56,7 +56,7 @@ func (h *OrderHandler) GetAll(c *gin.Context) {
 }
 
 func (h *OrderHandler) Delete(c *gin.Context) {
-	orderID:= c.Param("order")
+	orderID := c.Param("order")
 	userID, err := utils.GetUserID(c)
 
 	if err != nil {

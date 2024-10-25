@@ -3,13 +3,14 @@ package APIShopProducthandler
 import (
 	"log/slog"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
-	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
+	"github.com/oogway93/golangArchitecture/internal/core/entity/API/shop"
 	"github.com/oogway93/golangArchitecture/internal/core/errors/data/response"
 )
 
 func (h *ProductHandler) Create(c *gin.Context) {
-	var newProduct products.Product
+	var newProduct productsAPI.Product
 
 	categoryID := c.Param("category")
 
@@ -47,7 +48,7 @@ func (h *ProductHandler) GetAll(c *gin.Context) {
 func (h *ProductHandler) Get(c *gin.Context) {
 	categoryID := c.Param("category")
 	productID := c.Param("product")
-	result := h.service.Get(categoryID, productID)
+	result := h.service.Get("API", categoryID, productID)
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",
@@ -72,7 +73,7 @@ func (h *ProductHandler) Delete(c *gin.Context) {
 	})
 }
 func (h *ProductHandler) Update(c *gin.Context) {
-	var newProduct products.Product
+	var newProduct productsAPI.Product
 	categoryID := c.Param("category")
 	productID := c.Param("product")
 	err := c.BindJSON(&newProduct)
@@ -82,7 +83,7 @@ func (h *ProductHandler) Update(c *gin.Context) {
 	}
 	err = h.service.Update(categoryID, productID, &newProduct)
 	if err != nil {
-		slog.Warn("Errors in Update handler","error", err.Error())
+		slog.Warn("Errors in Update handler", "error", err.Error())
 	}
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Category UPDATED successfully",

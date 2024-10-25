@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/oogway93/golangArchitecture/internal/core/entity/user"
+	"github.com/oogway93/golangArchitecture/internal/core/entity/API/user"
 
 	"github.com/oogway93/golangArchitecture/internal/core/errors/data/response"
 )

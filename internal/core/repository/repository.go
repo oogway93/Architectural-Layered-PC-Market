@@ -4,20 +4,21 @@ import (
 	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
 )
 
+type CategoryRepository interface {
+	Create(newCategory *models.Category)
+	GetAll() ([]models.Category, []map[string]interface{})
+	Delete(categoryID string) error
+	Get(categoryID string) (models.Category, map[string]interface{})
+	Update(categoryID string, newCategory models.Category) error
+}
+
 type ProductRepository interface {
 	GetByCategoryId(categoryID uint) string
 	Create(categoryID string, newProduct *models.Product) error
 	GetAll(categoryID string) ([]models.Product, []map[string]interface{})
 	Delete(categoryID string, productID string) error
 	Get(categoryID string, productID string) map[string]interface{}
-	Update(newCategoryName, productID string, newProduct models.Product) (map[string]interface{}, error)}
-
-type CategoryRepository interface {
-	Create(newCategory *models.Category)
-	GetAll() []map[string]interface{}
-	Delete(categoryID string) error
-	Get(categoryID string) map[string]interface{}
-	Update(categoryID string, newCategory models.Category) error
+	Update(newCategoryName, productID string, newProduct models.Product) (map[string]interface{}, error)
 }
 
 type OrderRepository interface {
@@ -60,5 +61,5 @@ type Repository struct {
 	AuthRepository     AuthRepository
 }
 type Cache struct {
-	CacheRepository    CacheRepository
+	CacheRepository CacheRepository
 }

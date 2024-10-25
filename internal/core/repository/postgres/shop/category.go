@@ -39,7 +39,7 @@ func (d *CategoryShopPostgres) Create(newCategory *models.Category) {
 	tx.Commit()
 }
 
-func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
+func (d *CategoryShopPostgres) GetAll() ([]models.Category, []map[string]interface{}) {
 	var categories []models.Category
 	var products []models.Product
 	tx := d.db.Begin()
@@ -49,7 +49,7 @@ func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 	if result.Error != nil {
 		slog.Warn("Error finding records from CATEGORY", "error", result.Error)
 	}
-	var resultCategories []map[string]interface{}
+	var resultCategoriesAPI []map[string]interface{}
 	for _, category := range categories {
 		result := tx.Where("category_id = ?", category.ID).Find(&products)
 		if result.Error != nil {
@@ -66,14 +66,14 @@ func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 				"uuid":         product.UUID,
 			})
 		}
-		resultCategories = append(resultCategories, map[string]interface{}{
+		resultCategoriesAPI = append(resultCategoriesAPI, map[string]interface{}{
 			"category_name": category.CategoryName,
 			"products":      resultProducts,
 		})
 	}
 	tx.Commit()
 
-	return resultCategories
+	return categories, resultCategoriesAPI
 }
 
 func (d *CategoryShopPostgres) Delete(categoryID string) error {
@@ -88,7 +88,7 @@ func (d *CategoryShopPostgres) Delete(categoryID string) error {
 	return result.Error
 }
 
-func (d *CategoryShopPostgres) Get(categoryID string) map[string]interface{} {
+func (d *CategoryShopPostgres) Get(categoryID string) (models.Category, map[string]interface{}) {
 	var category models.Category
 	var products []models.Product
 	tx := d.db.Begin()
@@ -116,7 +116,7 @@ func (d *CategoryShopPostgres) Get(categoryID string) map[string]interface{} {
 		"products":      resultProducts,
 	}
 	tx.Commit()
-	return resultCategory
+	return category, resultCategory
 }
 
 func (d *CategoryShopPostgres) Update(categoryID string, newCategory models.Category) error {

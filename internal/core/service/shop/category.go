@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
+	"github.com/oogway93/golangArchitecture/internal/core/entity/API/shop"
 	"github.com/oogway93/golangArchitecture/internal/core/repository"
 	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
 	"github.com/oogway93/golangArchitecture/internal/core/utils"
 )
-
-
 
 type CategoryShopService struct {
 	repo  repository.CategoryRepository
@@ -24,26 +22,54 @@ func NewServiceShopCategory(repo repository.CategoryRepository, cache repository
 	}
 }
 
-func (s *CategoryShopService) Create(requestData *products.Category) {
+func (s *CategoryShopService) Create(requestData *productsAPI.Category) {
 	categoryModel := models.Category{
 		CategoryName: requestData.CategoryName,
 	}
 	s.repo.Create(&categoryModel)
 }
 
-func (s *CategoryShopService) GetAll() []map[string]interface{} {
+func (s *CategoryShopService) GetAll(reqFrom string) ([]models.Category, []map[string]interface{}) {
+	if reqFrom == "HTTP" {
+		var categoriesModel []models.Category
+		key := "categoriesHTTP"
+		cachedCategories, err := s.cache.Get(key)
+		if err == nil {
+			err := utils.Deserialize(cachedCategories, &categoriesModel)
+			if err != nil {
+				return nil, nil
+			}
+
+			return categoriesModel, nil
+		}
+		categoriesModel, _ = s.repo.GetAll()
+
+		if len(categoriesModel) != 0 {
+			categoriesSerialized, err := utils.Serialize(categoriesModel)
+			if err != nil {
+				slog.Warn("serialization incorrect")
+			}
+
+			err = s.cache.Set(key, categoriesSerialized)
+			if err != nil {
+				slog.Warn("set cache incorrect")
+			}
+
+		}
+		return categoriesModel, nil
+	}
 	var categories []map[string]interface{}
-	key := "categories"
+	key := "categoriesAPI"
 	cachedCategories, err := s.cache.Get(key)
 	if err == nil {
 		err := utils.Deserialize(cachedCategories, &categories)
 		if err != nil {
-			return nil
+			return nil, nil
 		}
 
-		return categories
+		return nil, categories
 	}
-	categories = s.repo.GetAll()
+	_, categories = s.repo.GetAll()
 
 	if len(categories) != 0 {
 		categoriesSerialized, err := utils.Serialize(categories)
@@ -57,32 +83,53 @@ func (s *CategoryShopService) GetAll() []map[string]interface{} {
 		}
 
 	}
-	return categories
+	return nil, categories
 }
-func (s *CategoryShopService) Get(categoryID string) map[string]interface{} {
+func (s *CategoryShopService) Get(reqFrom, categoryID string) (models.Category, map[string]interface{}) {
+	if reqFrom == "HTTP" {
+		var categoryModel models.Category
+		key := fmt.Sprintf("category:%s", categoryID)
+		cachedCategories, err := s.cache.Get(key)
+		if err == nil {
+			_ = utils.Deserialize(cachedCategories, &categoryModel)
+			return categoryModel, nil
+		}
+		categoryModel, _ = s.repo.Get(categoryID)
+
+		categoriesSerialized, err := utils.Serialize(categoryModel)
+		if err != nil {
+			return models.Category{}, nil
+		}
+
+		err = s.cache.Set(key, categoriesSerialized)
+		if err != nil {
+			return models.Category{}, nil
+		}
+		return categoryModel, nil
+	}
 	var category map[string]interface{}
 	key := fmt.Sprintf("category:%s", categoryID)
 	cachedCategories, err := s.cache.Get(key)
 	if err == nil {
 		err := utils.Deserialize(cachedCategories, &category)
 		if err != nil {
-			return nil
+			return models.Category{}, nil
 		}
 
-		return category
+		return models.Category{}, category
 	}
-	category = s.repo.Get(categoryID)
+	_, category = s.repo.Get(categoryID)
 
 	categoriesSerialized, err := utils.Serialize(category)
 	if err != nil {
-		return nil
+		return models.Category{}, nil
 	}
 
 	err = s.cache.Set(key, categoriesSerialized)
 	if err != nil {
-		return nil
+		return models.Category{}, nil
 	}
-	return category
+	return models.Category{}, category
 }
 func (s *CategoryShopService) Delete(categoryID string) error {
 	key := fmt.Sprintf("category:%s", categoryID)
@@ -98,7 +145,7 @@ func (s *CategoryShopService) Delete(categoryID string) error {
 
 	return nil
 }
-func (s *CategoryShopService) Update(categoryID string, requestData *products.Category) error {
+func (s *CategoryShopService) Update(categoryID string, requestData *productsAPI.Category) error {
 	categoryModel := models.Category{
 		CategoryName: requestData.CategoryName,
 	}

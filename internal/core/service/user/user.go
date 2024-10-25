@@ -1,7 +1,7 @@
 package serviceUser
 
 import (
-	"github.com/oogway93/golangArchitecture/internal/core/entity/user"
+	"github.com/oogway93/golangArchitecture/internal/core/entity/API/user"
 	"github.com/oogway93/golangArchitecture/internal/core/repository"
 	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
 	"github.com/oogway93/golangArchitecture/internal/core/utils"

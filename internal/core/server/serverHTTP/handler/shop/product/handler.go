@@ -9,7 +9,7 @@ import (
 
 func (h *HTTPProductHandler) GetAll(c *gin.Context) {
 	categoryID := c.Param("category")
-	_,result := h.service.GetAll("API", categoryID)
+	_,result := h.service.GetAll("HTTP", categoryID)
 
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
@@ -24,7 +24,7 @@ func (h *HTTPProductHandler) GetAll(c *gin.Context) {
 func (h *HTTPProductHandler) Get(c *gin.Context) {
 	categoryID := c.Param("category")
 	productID := c.Param("product")
-	result := h.service.Get(categoryID, productID)
+	result := h.service.Get("HTTP", categoryID, productID)
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",
