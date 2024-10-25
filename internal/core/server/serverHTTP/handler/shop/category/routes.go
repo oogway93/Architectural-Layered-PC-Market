@@ -6,12 +6,14 @@ import (
 )
 
 type HTTPCategoryHandler struct {
-	service service.ServiceCategory
+	serviceCategory service.ServiceCategory
+	serviceProduct service.ServiceProduct
 }
 
-func NewHTTPCategoryShopHandler(service service.ServiceCategory) *HTTPCategoryHandler {
+func NewHTTPCategoryShopHandler(serviceCategory service.ServiceCategory, serviceProduct service.ServiceProduct) *HTTPCategoryHandler {
 	return &HTTPCategoryHandler{
-		service: service,
+		serviceCategory: serviceCategory,
+		serviceProduct: serviceProduct,
 	}
 }
 

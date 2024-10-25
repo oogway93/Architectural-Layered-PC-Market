@@ -30,18 +30,42 @@ func (s *ProductShopService) Create(categoryID string, requestData *products.Pro
 	}
 	s.repo.Create(categoryID, &productModel)
 }
-func (s *ProductShopService) GetAll(categoryID string) []map[string]interface{} {
+func (s *ProductShopService) GetAll(reqFrom string, categoryID string) ([]models.Product, []map[string]interface{}) {
+	if reqFrom == "HTTP" {
+		var productsModel []models.Product
+		key := "productsHTTP"
+		cachedProducts, err := s.cache.Get(key)
+		if err == nil {
+			err := utils.Deserialize(cachedProducts, &productsModel)
+			if err != nil {
+				return nil, nil
+			}
+			return productsModel, nil
+		}
+		productsModel, _ = s.repo.GetAll(categoryID)
+		if len(productsModel) != 0 {
+			productsSerialized, err := utils.Serialize(productsModel)
+			if err != nil {
+				slog.Warn("serialization incorrect")
+			}
+			err = s.cache.Set(key, productsSerialized)
+			if err != nil {
+				slog.Warn("set cache incorrect")
+			}
+		}
+		return productsModel, nil
+	}
 	var products []map[string]interface{}
-	key := "products"
+	key := "productsAPI"
 	cachedProducts, err := s.cache.Get(key)
 	if err == nil {
 		err := utils.Deserialize(cachedProducts, &products)
 		if err != nil {
-			return nil
+			return nil, nil
 		}
-		return products
+		return nil, products
 	}
-	products = s.repo.GetAll(categoryID)
+	_, products = s.repo.GetAll(categoryID)
 	if len(products) != 0 {
 		productsSerialized, err := utils.Serialize(products)
 		if err != nil {
@@ -52,7 +76,7 @@ func (s *ProductShopService) GetAll(categoryID string) []map[string]interface{} 
 			slog.Warn("set cache incorrect")
 		}
 	}
-	return products
+	return nil, products
 }
 func (s *ProductShopService) Delete(categoryID, productID string) error {
 	key := fmt.Sprintf("category:%s::product:%s", categoryID, productID)

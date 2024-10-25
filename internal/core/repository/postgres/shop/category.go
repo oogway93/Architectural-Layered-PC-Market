@@ -54,6 +54,7 @@ func (d *CategoryShopPostgres) GetAll() []map[string]interface{} {
 		result := tx.Where("category_id = ?", category.ID).Find(&products)
 		if result.Error != nil {
 			slog.Warn("Error finding records from PRODUCT", "error", result.Error)
+			tx.Rollback()
 		}
 
 		var resultProducts []map[string]interface{}

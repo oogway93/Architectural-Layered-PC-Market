@@ -1,14 +1,15 @@
 package HTTPShopCategoryHandler
 
 import (
-	"log/slog"
+	"log"
+	// "log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	// "github.com/google/uuid"
 	"github.com/oogway93/golangArchitecture/internal/core/entity/products"
-	"github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
-	"github.com/shopspring/decimal"
+	// "github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
+	// "github.com/shopspring/decimal"
 	// "github.com/oogway93/golangArchitecture/internal/core/repository/postgres/models"
 )
 
@@ -19,7 +20,8 @@ type TemplateData struct {
 
 func (h *HTTPCategoryHandler) GetAll(c *gin.Context) {
 	var categories []products.Category
-	result := h.service.GetAll()
+	result := h.serviceCategory.GetAll()
+	log.Println(result)
 	for _, category := range result {
 		category_name := products.Category{
 			CategoryName: category["category_name"].(string),
@@ -28,39 +30,35 @@ func (h *HTTPCategoryHandler) GetAll(c *gin.Context) {
 		categories = append(categories, category_name)
 	}
 	templateData := &TemplateData{Categories: categories}
-	c.HTML(http.StatusOK, "categories.html", templateData)
+	c.HTML(http.StatusOK, "categories", templateData)
+
 }
 
 func (h *HTTPCategoryHandler) Get(c *gin.Context) {
 	categoryID := c.Param("category")
-	result := h.service.Get(categoryID)
-	var categoryProduct []models.Product
-	if sliceOfInterfaces, ok := result["products"].([]interface{}); ok {
-		for _, productInterface := range sliceOfInterfaces {
-			if productMap, ok := productInterface.(map[string]interface{}); ok {
-				price, err := decimal.NewFromString(productMap["price"].(string))
-				if err != nil {
-					slog.Info("Incorrect type for Price", "error", err)
-				}
-				product := models.Product{
-					UUID:        uuid.MustParse(productMap["uuid"].(string)),
-					ProductName: productMap["product_name"].(string),
-					Description: productMap["description"].(string),
-					Price:       price,
-					Category:    models.Category{CategoryName: result["category_name"].(string)},
-				}
-				categoryProduct = append(categoryProduct, product)
-			} else {
-				slog.Warn("Error: Unexpected type in products slice. Expected map[string]interface{}, got %T", productInterface)
-			}
-		}
-	} else {
-		slog.Info("Error: Unexpected type for products. Expected []interface{}, got %T", result["products"])
-	}
+	resultCategory := h.serviceCategory.Get(categoryID)
+	resultProductsModels, _ := h.serviceProduct.GetAll("HTTP", categoryID)
+	// var categoryProduct []models.Product
+	// for _, product := range resultProducts {
+	// 	// price, err := decimal.NewFromString(resultCategory["products"].(map[string]interface{}))
+	// 	// if err != nil {
+	// 	// 	slog.Info("Incorrect type for Price", "error", err)
+	// 	// }
+	// 	product := models.Product{
+	// 		UUID:        uuid.MustParse(product["uuid"].(string)),
+	// 		ProductName: product["product_name"].(string),
+	// 		Description: product["description"].(string),
+	// 		Price:       product["price"].(decimal.Decimal),
+	// 		Category:    models.Category{CategoryName: resultCategory["category_name"].(string)},
+	// 	}
+	// 	categoryProduct = append(categoryProduct, product)
+	// }
+
 	categoryProducts := products.CategoryProducts{
-		CategoryName: result["category_name"].(string),
-		Products:     categoryProduct,
+		CategoryName: resultCategory["category_name"].(string),
+		Products:     resultProductsModels,
 	}
 	templateData := &TemplateData{CategoryProducts: categoryProducts}
-	c.HTML(http.StatusOK, "category.html", templateData)
+	c.HTML(http.StatusOK, "category", templateData)
+
 }

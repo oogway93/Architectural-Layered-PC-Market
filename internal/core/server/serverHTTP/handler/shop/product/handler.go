@@ -9,7 +9,7 @@ import (
 
 func (h *HTTPProductHandler) GetAll(c *gin.Context) {
 	categoryID := c.Param("category")
-	result := h.service.GetAll(categoryID)
+	_,result := h.service.GetAll("API", categoryID)
 
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,

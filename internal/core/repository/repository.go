@@ -7,7 +7,7 @@ import (
 type ProductRepository interface {
 	GetByCategoryId(categoryID uint) string
 	Create(categoryID string, newProduct *models.Product) error
-	GetAll(categoryID string) []map[string]interface{}
+	GetAll(categoryID string) ([]models.Product, []map[string]interface{})
 	Delete(categoryID string, productID string) error
 	Get(categoryID string, productID string) map[string]interface{}
 	Update(newCategoryName, productID string, newProduct models.Product) (map[string]interface{}, error)}

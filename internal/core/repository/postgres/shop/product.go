@@ -67,7 +67,7 @@ func (d *ProductShopPostgres) Create(categoryID string, newProduct *models.Produ
 	return nil
 }
 
-func (d *ProductShopPostgres) GetAll(categoryID string) []map[string]interface{} {
+func (d *ProductShopPostgres) GetAll(categoryID string) ([]models.Product, []map[string]interface{}) {
 	var products []models.Product
 	var category models.Category
 	tx := d.db.Begin()
@@ -92,20 +92,12 @@ func (d *ProductShopPostgres) GetAll(categoryID string) []map[string]interface{}
 		})
 	}
 	tx.Commit()
-	return resultProducts
+	return products, resultProducts
 }
 
 func (d *ProductShopPostgres) Delete(categoryID string, productID string) error {
 	var product models.Product
-	// var category models.Category
 	tx := d.db.Begin()
-
-	// getCategoryID := tx.Where("category_name = ? A ND deleted_at IS NULL", categoryID).First(&category)
-
-	// if getCategoryID.Error != nil {
-	// 	log.Printf("Error finding records from category: %v", getCategoryID.Error)
-	// }
-
 	result := tx.Where("product_name = ?", productID).Delete(&product)
 	if result.Error != nil {
 		slog.Warn("Error in products's deleting method", "error", result.Error)
