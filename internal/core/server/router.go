@@ -39,6 +39,7 @@ func SetupRouter(
 	httpRoutes := router.Group("/")
 	registerHTTPRoutes(httpRoutes, ServiceCategory, ServiceProduct)
 	registerAPIRoutes(apiRoutes, httpRoutes, ServiceCategory, ServiceProduct, ServiceOrder, ServiceUser, ServiceAuth)
+	router.Use(secureHeaders)
 	return router
 }
 

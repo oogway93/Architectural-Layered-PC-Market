@@ -17,9 +17,6 @@ func Set(config *config.App) {
 	logger = slog.New(
 		slog.NewTextHandler(os.Stderr, nil),
 	)
-	// wd, _ := os.Getwd()
-	// slog.Info(wd)
-	// path := fmt.Sprintf("%s%s", wd, "./logs/application.log")
 	if config.Env == "production" {
 		logRotate := &lumberjack.Logger{
 			Filename:   "logs/application.log",
@@ -36,6 +33,5 @@ func Set(config *config.App) {
 			),
 		)
 	}
-	
 	slog.SetDefault(logger)
 }

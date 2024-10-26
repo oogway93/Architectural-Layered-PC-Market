@@ -44,6 +44,8 @@ type (
 		URL            string
 		Port           string
 		AllowedOrigins string
+		TLSCertPath    string
+		TLSKeyPath     string
 	}
 )
 
@@ -63,7 +65,7 @@ func New(APP_ENV string) (*Container, error) {
 	redis_expiration, _ := strconv.Atoi(os.Getenv("REDIS_EXPIRATION"))
 	app := &App{
 		Name:    os.Getenv("APP_NAME"),
-		Env:     os.Getenv("APP_ENV"),
+		Env:     APP_ENV,
 		LogPath: os.Getenv("LOG_FILE_PATH"),
 	}
 
@@ -86,6 +88,8 @@ func New(APP_ENV string) (*Container, error) {
 		Env:            os.Getenv("APP_ENV"),
 		URL:            os.Getenv("HTTP_URL"),
 		Port:           os.Getenv("HTTP_PORT"),
+		TLSCertPath:    os.Getenv("TLS_CERT_PATH"),
+		TLSKeyPath:     os.Getenv("TLS_KEY_PATH"),
 		AllowedOrigins: os.Getenv("HTTP_ALLOWED_ORIGINS"),
 	}
 

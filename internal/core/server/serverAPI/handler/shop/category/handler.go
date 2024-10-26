@@ -25,7 +25,7 @@ func (h *CategoryHandler) Create(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusCreated, webResponse)
+	c.SecureJSON(http.StatusCreated, webResponse)
 }
 
 func (h *CategoryHandler) GetAll(c *gin.Context) {
@@ -37,7 +37,7 @@ func (h *CategoryHandler) GetAll(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, webResponse)
+	c.SecureJSON(http.StatusOK, webResponse)
 }
 
 func (h *CategoryHandler) Get(c *gin.Context) {

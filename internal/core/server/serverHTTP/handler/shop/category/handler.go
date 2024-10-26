@@ -29,5 +29,5 @@ func (h *HTTPCategoryHandler) Get(c *gin.Context) {
 		Products: resultProductsModels,
 	}
 	templateData := &TemplateData{CategoryProducts: categoryProducts}
-	c.HTML(http.StatusOK, "category", templateData)
+	c.HTML(http.StatusOK, "categoryWithProducts", templateData)
 }

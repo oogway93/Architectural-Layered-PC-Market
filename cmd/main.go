@@ -87,7 +87,7 @@ func main() {
 
 	router := Server.SetupRouter(categoryService, productService, orderService, userService, authService)
 	server := new(Server.Server)
-	if err := server.Run(config.HTTP.Port, router); err != nil {
-		slog.Error("Some errors in initialization routes", "error", err)
+	if err := server.Run(config, router); err != nil {
+		slog.Error("Some errors in starting Server", "error", err)
 	}
 }

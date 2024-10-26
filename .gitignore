@@ -26,3 +26,5 @@ go.work.sum
 .env.development
 .env.production
 todo.txt
+internal/adapter/tls/server.crt
+internal/adapter/tls/server.key

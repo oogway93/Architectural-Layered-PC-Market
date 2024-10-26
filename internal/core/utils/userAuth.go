@@ -53,7 +53,7 @@ func ParseToken(accessToken string) (string, error) {
 	return claims.Login, nil
 }
 
-// FIXME: сделать тут так, чтобы можно было получать из jwt токена id юзера, ибо почему то только логин отображается в data.
+// FIXME: сделать тут так, чтобы можно было получать из jwt токена id юзера, ибо почему-то только логин отображается в data.
 func GetUserID(c *gin.Context) (string, error) {
 	id, ok := c.Get("currentUserLogin")
 	if !ok {
