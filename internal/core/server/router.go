@@ -1,6 +1,9 @@
 package server
 
 import (
+	"text/template"
+	"time"
+
 	"github.com/foolin/goview"
 	"github.com/foolin/goview/supports/ginview"
 	"github.com/gin-gonic/gin"
@@ -10,6 +13,7 @@ import (
 	APIHandlerShopProduct "github.com/oogway93/golangArchitecture/internal/core/server/serverAPI/handler/shop/product"
 	APIHandlerUser "github.com/oogway93/golangArchitecture/internal/core/server/serverAPI/handler/user"
 	HTTPHandlerShopCategory "github.com/oogway93/golangArchitecture/internal/core/server/serverHTTP/handler/shop/category"
+	HTTPHandlerShopProduct "github.com/oogway93/golangArchitecture/internal/core/server/serverHTTP/handler/shop/product"
 	"github.com/oogway93/golangArchitecture/internal/core/service"
 )
 
@@ -23,10 +27,12 @@ func SetupRouter(
 	router := gin.Default()
 	router.HTMLRender = ginview.New(goview.Config{
 		Root:      "internal/core/server/serverHTTP/static/templates/shop",
-		Extension: ".tmpl",
+		Extension: ".html",
 		Master:    "base",
-		Partials:  nil,
-		Funcs: nil,
+		Partials:  []string{"boostrap", "nav"},
+		Funcs: template.FuncMap{"humanDate": func(t time.Time) string {
+			return t.Format("02 Jan 2006 at 15:04")
+		}},
 		DisableCache: true,
 	})
 	apiRoutes := router.Group("/api", UserIdentity)
@@ -45,6 +51,7 @@ func registerHTTPRoutes(
 	// ServiceAuth service.ServiceAuth,
 ) {
 	registerHTTPShopCategoryRoutes(ServiceCategory, ServiceProduct, httpRoutes)
+	registerHTTPShopProductRoutes(ServiceCategory, ServiceProduct, httpRoutes)
 }
 
 func registerAPIRoutes(
@@ -65,6 +72,10 @@ func registerAPIRoutes(
 
 func registerHTTPShopCategoryRoutes(serviceCategory service.ServiceCategory, serviceProduct service.ServiceProduct, router *gin.RouterGroup) {
 	HTTPHandlerShopCategory.NewHTTPCategoryShopHandler(serviceCategory, serviceProduct).HTTPShopCategoryHandlerRoutes(router)
+}
+
+func registerHTTPShopProductRoutes(serviceCategory service.ServiceCategory, serviceProduct service.ServiceProduct, router *gin.RouterGroup) {
+	HTTPHandlerShopProduct.NewHTTPProductShopHandler(serviceCategory, serviceProduct).HTTPShopProductHandlerRoutes(router)
 }
 
 func registerAPIShopCategoryRoutes(service service.ServiceCategory, router *gin.RouterGroup) {

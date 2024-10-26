@@ -91,30 +91,54 @@ func (s *ProductShopService) Delete(categoryID, productID string) error {
 
 	return err
 }
-func (s *ProductShopService) Get(reqFrom, categoryID, productID string) map[string]interface{} {
+func (s *ProductShopService) Get(reqFrom, categoryID, productID string) (models.Product, map[string]interface{}) {
+	if reqFrom == "HTTP" {
+		var productModel models.Product
+		key := fmt.Sprintf("categoryHTTP:%s::productHTTP:%s", categoryID, productID)
+		cachedProduct, err := s.cache.Get(key)
+		if err == nil {
+			err := utils.Deserialize(cachedProduct, &productModel)
+			if err != nil {
+				return models.Product{}, nil
+			}
+			return productModel, nil
+		}
+		productModel, _ = s.repo.Get(categoryID, productID)
+
+		productSerialized, err := utils.Serialize(productModel)
+		if err != nil {
+			return models.Product{}, nil
+		}
+
+		err = s.cache.Set(key, productSerialized)
+		if err != nil {
+			return models.Product{}, nil
+		}
+		return productModel, nil
+	}
 	var product map[string]interface{}
-	key := fmt.Sprintf("category:%s::product:%s", categoryID, productID)
+	key := fmt.Sprintf("categoryAPI:%s::productAPI:%s", categoryID, productID)
 	cachedProduct, err := s.cache.Get(key)
 	if err == nil {
 		err := utils.Deserialize(cachedProduct, &product)
 		if err != nil {
-			return nil
+			return models.Product{}, nil
 		}
 
-		return product
+		return models.Product{}, product
 	}
-	product = s.repo.Get(categoryID, productID)
+	_, product = s.repo.Get(categoryID, productID)
 
 	productSerialized, err := utils.Serialize(product)
 	if err != nil {
-		return nil
+		return models.Product{}, nil
 	}
 
 	err = s.cache.Set(key, productSerialized)
 	if err != nil {
-		return nil
+		return models.Product{}, nil
 	}
-	return product
+	return models.Product{}, product
 }
 func (s *ProductShopService) Update(categoryID, productID string, requestData *productsAPI.Product) error {
 	productModel := models.Product{

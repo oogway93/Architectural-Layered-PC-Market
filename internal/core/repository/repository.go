@@ -17,7 +17,7 @@ type ProductRepository interface {
 	Create(categoryID string, newProduct *models.Product) error
 	GetAll(categoryID string) ([]models.Product, []map[string]interface{})
 	Delete(categoryID string, productID string) error
-	Get(categoryID string, productID string) map[string]interface{}
+	Get(categoryID string, productID string) (models.Product, map[string]interface{})
 	Update(newCategoryName, productID string, newProduct models.Product) (map[string]interface{}, error)
 }
 

@@ -18,7 +18,7 @@ type ServiceCategory interface {
 type ServiceProduct interface {
 	Create(categoryID string, requestData *productsAPI.Product)
 	GetAll(reqFrom string, categoryID string) ([]models.Product, []map[string]interface{})
-	Get(reqFrom string, categoryID string, productID string) map[string]interface{}
+	Get(reqFrom string, categoryID string, productID string) (models.Product, map[string]interface{})
 	Update(newCategoryName, productID string, requestData *productsAPI.Product) error
 	Delete(categoryID, productID string) error
 }

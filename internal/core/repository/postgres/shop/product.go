@@ -107,7 +107,7 @@ func (d *ProductShopPostgres) Delete(categoryID string, productID string) error 
 	return result.Error
 }
 
-func (d *ProductShopPostgres) Get(categoryID string, productID string) map[string]interface{} {
+func (d *ProductShopPostgres) Get(categoryID string, productID string) (models.Product, map[string]interface{}) {
 	var product models.Product
 	var category models.Category
 	tx := d.db.Begin()
@@ -129,7 +129,7 @@ func (d *ProductShopPostgres) Get(categoryID string, productID string) map[strin
 		"description":   product.Description,
 	}
 	tx.Commit()
-	return resultProduct
+	return product, resultProduct
 }
 func (d *ProductShopPostgres) Update(newCategoryName, productID string, newProduct models.Product) (map[string]interface{}, error) {
 	var product models.Product

@@ -1,0 +1,42 @@
+{{define "title"}}Category: {{.CategoryProducts.Category.CategoryName}}{{end}}
+{{define "main"}}
+<div class="text-center">
+    <h1>Category: {{.CategoryProducts.Category.CategoryName}}</h1>
+</div>
+
+<div class="container text-center">
+    <table class="table table-striped">
+        <caption>{{len }}</caption>
+        <thead>
+            <tr>
+                <th scope="col">
+                    №
+                </th>
+                <th scope="col">
+                    Name
+                </th>
+                <th scope="col">
+                    Price
+                </th>
+                <th scope="col">
+                    Description
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {{$categoryName := .CategoryProducts.Category.CategoryName}}
+            {{ range $index, $product := .CategoryProducts.Products }}
+            <tr>
+                <th scope="row">{{$index}}</th>
+                <td>
+                    <a href="/category/{{$categoryName}}/product/{{ $product.ProductName }}">{{$product.ProductName}}
+                    </a>
+                </td>
+                <td>{{ $product.Price }}</td>
+                <td>{{ $product.Description }}</td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+</div>
+{{end}}

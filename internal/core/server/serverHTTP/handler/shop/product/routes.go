@@ -6,17 +6,19 @@ import (
 )
 
 type HTTPProductHandler struct {
-	service service.ServiceProduct
+	serviceCategory service.ServiceCategory
+	serviceProduct  service.ServiceProduct
 }
 
-func NewProductShopHandler(service service.ServiceProduct) *HTTPProductHandler {
+func NewHTTPProductShopHandler(serviceCategory service.ServiceCategory, serviceProduct service.ServiceProduct) *HTTPProductHandler {
 	return &HTTPProductHandler{
-		service: service,
+		serviceCategory: serviceCategory,
+		serviceProduct:  serviceProduct,
 	}
 }
 
 func (h *HTTPProductHandler) HTTPShopProductHandlerRoutes(HTTPRoutes *gin.RouterGroup) *gin.RouterGroup {
-	product := HTTPRoutes.Group("/category/:category/products")
+	product := HTTPRoutes.Group("/category/:category/product")
 	{
 		product.GET("/", h.GetAll)
 		// product.POST("/", h.Create)

@@ -30,5 +30,4 @@ func (h *HTTPCategoryHandler) Get(c *gin.Context) {
 	}
 	templateData := &TemplateData{CategoryProducts: categoryProducts}
 	c.HTML(http.StatusOK, "category", templateData)
-
 }
