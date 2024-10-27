@@ -30,23 +30,6 @@ func (h *HTTPCategoryHandler) Get(c *gin.Context) {
 		Category: resultCategory,
 		Products: resultProductsModels,
 	}
-	// token, err := handlerAuth.GetJWTToken(c)
-	// if err != nil {
-	// 	c.Redirect(http.StatusSeeOther, "/login")
-	// 	return
-	// }
-
-	// Validate the token here
-	// claims, err := handlerAuth.validateJWT(token)
-	// if err != nil {
-	//     c.Redirect(http.StatusSeeOther, "/login")
-	//     return
-	// }
-
-	// // Render the dashboard template with user data
-	// c.HTML(http.StatusOK, "dashboard.html", gin.H{
-	//     "username": claims["username"].(string),
-	// })
 	templateData := &TemplateData{CategoryProducts: categoryProducts}
 	c.HTML(http.StatusOK, "categoryWithProducts", templateData)
 }

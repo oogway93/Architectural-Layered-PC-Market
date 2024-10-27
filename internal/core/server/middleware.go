@@ -9,10 +9,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	handlerAuth "github.com/oogway93/golangArchitecture/internal/core/server/serverAPI/handler/auth"
 )
 
-// FIXME: сделать как-нибудь, чтоб можно было проверить через бд есть ли такой логин,
-// иначе опрокинуть ошибку. Проблема просто в том, что как создать структуру Handler, из которой буду вызывать сервис->репозиторий.
 func UserIdentity(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 
@@ -62,6 +61,15 @@ func UserIdentity(c *gin.Context) {
 		return
 	}
 	c.Set("currentUserLogin", userLogin)
+	c.Next()
+}
+
+func UserIdentityHTTP(c *gin.Context) {
+	value, err := handlerAuth.GetJWTToken(c)
+	if err != nil || value == "" {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
 	c.Next()
 }
 

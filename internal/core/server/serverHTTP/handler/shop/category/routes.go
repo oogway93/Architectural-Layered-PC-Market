@@ -7,13 +7,13 @@ import (
 
 type HTTPCategoryHandler struct {
 	serviceCategory service.ServiceCategory
-	serviceProduct service.ServiceProduct
+	serviceProduct  service.ServiceProduct
 }
 
 func NewHTTPCategoryShopHandler(serviceCategory service.ServiceCategory, serviceProduct service.ServiceProduct) *HTTPCategoryHandler {
 	return &HTTPCategoryHandler{
 		serviceCategory: serviceCategory,
-		serviceProduct: serviceProduct,
+		serviceProduct:  serviceProduct,
 	}
 }
 
