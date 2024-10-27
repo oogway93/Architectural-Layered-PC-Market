@@ -1,11 +1,13 @@
 package server
 
 import (
+	"net/http"
 	"text/template"
 	"time"
 
 	"github.com/foolin/goview"
 	"github.com/foolin/goview/supports/ginview"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	APIHandlerAuth "github.com/oogway93/golangArchitecture/internal/core/server/serverAPI/handler/auth"
 	APIHandlerShopCategory "github.com/oogway93/golangArchitecture/internal/core/server/serverAPI/handler/shop/category"
@@ -14,6 +16,7 @@ import (
 	APIHandlerUser "github.com/oogway93/golangArchitecture/internal/core/server/serverAPI/handler/user"
 	HTTPHandlerShopCategory "github.com/oogway93/golangArchitecture/internal/core/server/serverHTTP/handler/shop/category"
 	HTTPHandlerShopProduct "github.com/oogway93/golangArchitecture/internal/core/server/serverHTTP/handler/shop/product"
+	HTTPAuthHandler "github.com/oogway93/golangArchitecture/internal/core/server/serverHTTP/handler/user"
 	"github.com/oogway93/golangArchitecture/internal/core/service"
 )
 
@@ -35,11 +38,13 @@ func SetupRouter(
 		}},
 		DisableCache: true,
 	})
+	router.Use(secureHeaders)
+	router.Use(cors.Default())
 	apiRoutes := router.Group("/api", UserIdentity)
 	httpRoutes := router.Group("/")
-	registerHTTPRoutes(httpRoutes, ServiceCategory, ServiceProduct)
-	registerAPIRoutes(apiRoutes, httpRoutes, ServiceCategory, ServiceProduct, ServiceOrder, ServiceUser, ServiceAuth)
-	router.Use(secureHeaders)
+	registerHTTPRoutes(httpRoutes, ServiceCategory, ServiceProduct, ServiceAuth, ServiceUser)
+	registerAPIRoutes(apiRoutes, ServiceCategory, ServiceProduct, ServiceOrder, ServiceUser, ServiceAuth)
+	router.GET("/", func(c *gin.Context) { c.HTML(http.StatusOK, "home", nil) })
 	return router
 }
 
@@ -47,17 +52,17 @@ func registerHTTPRoutes(
 	httpRoutes *gin.RouterGroup,
 	ServiceCategory service.ServiceCategory,
 	ServiceProduct service.ServiceProduct,
+	ServiceAuth service.ServiceAuth,
+	ServiceUser service.ServiceUser,
 	// ServiceOrder service.ServiceOrder,
-	// ServiceUser service.ServiceUser,
-	// ServiceAuth service.ServiceAuth,
 ) {
 	registerHTTPShopCategoryRoutes(ServiceCategory, ServiceProduct, httpRoutes)
 	registerHTTPShopProductRoutes(ServiceCategory, ServiceProduct, httpRoutes)
+	registerHTTPAuthRoutes(ServiceAuth, ServiceUser, httpRoutes)
 }
 
 func registerAPIRoutes(
 	apiRoutes *gin.RouterGroup,
-	httpRoutes *gin.RouterGroup,
 	ServiceCategory service.ServiceCategory,
 	ServiceProduct service.ServiceProduct,
 	ServiceOrder service.ServiceOrder,
@@ -67,8 +72,8 @@ func registerAPIRoutes(
 	registerAPIShopCategoryRoutes(ServiceCategory, apiRoutes)
 	registerAPIShopProductRoutes(ServiceProduct, apiRoutes)
 	registerAPIOrderRoutes(ServiceOrder, apiRoutes)
-	registerAPIUserRoutes(ServiceUser, httpRoutes)
-	registerAPIAuthRoutes(ServiceAuth, httpRoutes)
+	registerAPIUserRoutes(ServiceUser, apiRoutes)
+	registerAPIAuthRoutes(ServiceAuth, apiRoutes)
 }
 
 func registerHTTPShopCategoryRoutes(serviceCategory service.ServiceCategory, serviceProduct service.ServiceProduct, router *gin.RouterGroup) {
@@ -77,6 +82,10 @@ func registerHTTPShopCategoryRoutes(serviceCategory service.ServiceCategory, ser
 
 func registerHTTPShopProductRoutes(serviceCategory service.ServiceCategory, serviceProduct service.ServiceProduct, router *gin.RouterGroup) {
 	HTTPHandlerShopProduct.NewHTTPProductShopHandler(serviceCategory, serviceProduct).HTTPShopProductHandlerRoutes(router)
+}
+
+func registerHTTPAuthRoutes(serviceAuth service.ServiceAuth, serviceUser service.ServiceUser, router *gin.RouterGroup) {
+	HTTPAuthHandler.NewHTTPAuthHandler(serviceAuth, serviceUser).HTTPAuthHandlerRoutes(router)
 }
 
 func registerAPIShopCategoryRoutes(service service.ServiceCategory, router *gin.RouterGroup) {

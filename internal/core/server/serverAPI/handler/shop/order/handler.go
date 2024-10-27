@@ -32,7 +32,7 @@ func (h *OrderHandler) Create(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusCreated, webResponse)
+	c.SecureJSON(http.StatusCreated, webResponse)
 }
 
 func (h *OrderHandler) GetAll(c *gin.Context) {
@@ -52,7 +52,7 @@ func (h *OrderHandler) GetAll(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, webResponse)
+	c.SecureJSON(http.StatusOK, webResponse)
 }
 
 func (h *OrderHandler) Delete(c *gin.Context) {
@@ -66,7 +66,7 @@ func (h *OrderHandler) Delete(c *gin.Context) {
 	}
 	result := h.service.Delete(userID, orderID)
 	if result != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.SecureJSON(http.StatusBadRequest, gin.H{
 			"error": "DELETE method doesn't work",
 		})
 		return
@@ -79,5 +79,5 @@ func (h *OrderHandler) Delete(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, webResponse)
+	c.SecureJSON(http.StatusOK, webResponse)
 }

@@ -9,18 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"github.com/oogway93/golangArchitecture/internal/core/service"
 )
-
-type Handler struct {
-	service *service.Service
-}
-
-func NewMiddlewareHandler(service *service.Service) *Handler {
-	return &Handler{
-		service: service,
-	}
-}
 
 // FIXME: сделать как-нибудь, чтоб можно было проверить через бд есть ли такой логин,
 // иначе опрокинуть ошибку. Проблема просто в том, что как создать структуру Handler, из которой буду вызывать сервис->репозиторий.
@@ -60,13 +49,6 @@ func UserIdentity(c *gin.Context) {
 		return
 	}
 
-	// userId, ok := claims["id"].(uint)
-	// if !ok {
-	// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user ID in token"})
-	// 	c.AbortWithStatus(http.StatusUnauthorized)
-	// 	return
-	// }
-
 	userLogin, ok := claims["login"].(string)
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid login in token"})
@@ -79,18 +61,7 @@ func UserIdentity(c *gin.Context) {
 		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
-
-	// var user models.User
-	// initializers.DB.Where("ID=?", claims["id"]).Find(&user)
-	// user := h.service.ServiceUser.Get(claims["login"].(string))
-	// if user["id"] == 0 {
-	// 	c.AbortWithStatus(http.StatusUnauthorized)
-	// 	return
-	// }
-
-	// c.Set("currentUserID", userId)
 	c.Set("currentUserLogin", userLogin)
-
 	c.Next()
 }
 

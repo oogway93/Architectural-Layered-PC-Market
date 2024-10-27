@@ -1,6 +1,7 @@
 package handlerAuth
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 	"os"
@@ -29,16 +30,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	generateToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"login":      authInput.Login,
-		"expiration": time.Now().Add(time.Hour * 24).Unix(),
-	})
-	token, err := generateToken.SignedString([]byte(os.Getenv("SECRET")))
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to generate token"})
+	token := GenerateToken(c, authInput.Login)
+	if token == "" {
+		c.SecureJSON(http.StatusBadRequest, gin.H{"error": "failed to generate token"})
+		return
 	}
-
+	SetJWTToken(c, token)
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",
@@ -46,6 +43,34 @@ func (h *AuthHandler) Login(c *gin.Context) {
 			"token": token,
 		},
 	}
+	c.SecureJSON(http.StatusOK, webResponse)
+}
 
-	c.JSON(http.StatusOK, webResponse)
+func GenerateToken(c *gin.Context, login string) string {
+	generateToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"login":      login,
+		"expiration": time.Now().Add(time.Hour * 24).Unix(),
+	})
+	token, err := generateToken.SignedString([]byte(os.Getenv("SECRET")))
+
+	if err != nil {
+		c.HTML(http.StatusBadRequest, "login", gin.H{"ErrorMessage": "Failed to generate token"})
+		return ""
+	}
+	return token
+}
+
+func SetJWTToken(c *gin.Context, token string) {
+	expire := time.Now().Add(time.Hour * 24)
+	c.SetCookie("jwt", token, int(expire.Unix()),
+		"/", "", true, true,
+	)
+}
+
+func GetJWTToken(c *gin.Context) (string, error) {
+	cookie, err := c.Request.Cookie("jwt")
+	if err != nil || cookie == nil {
+		return "", errors.New("no JWT token found")
+	}
+	return cookie.Value, nil
 }

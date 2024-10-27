@@ -50,7 +50,7 @@ func (h *CategoryHandler) Get(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, webResponse)
+	c.SecureJSON(http.StatusOK, webResponse)
 }
 func (h *CategoryHandler) Delete(c *gin.Context) {
 	categoryID := c.Param("category")
@@ -61,7 +61,7 @@ func (h *CategoryHandler) Delete(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
+	c.SecureJSON(http.StatusOK, gin.H{
 		"message": "Category DELETED successfully",
 	})
 }
@@ -74,7 +74,7 @@ func (h *CategoryHandler) Update(c *gin.Context) {
 		return
 	}
 	h.service.Update(categoryID, &newCategory)
-	c.JSON(http.StatusCreated, gin.H{
+	c.SecureJSON(http.StatusCreated, gin.H{
 		"message": "Category UPDATED successfully",
 	})
 }

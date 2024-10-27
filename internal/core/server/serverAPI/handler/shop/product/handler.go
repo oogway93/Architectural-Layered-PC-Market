@@ -28,7 +28,7 @@ func (h *ProductHandler) Create(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusCreated, webResponse)
+	c.SecureJSON(http.StatusCreated, webResponse)
 }
 
 func (h *ProductHandler) GetAll(c *gin.Context) {
@@ -42,7 +42,7 @@ func (h *ProductHandler) GetAll(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, webResponse)
+	c.SecureJSON(http.StatusOK, webResponse)
 }
 
 func (h *ProductHandler) Get(c *gin.Context) {
@@ -56,7 +56,7 @@ func (h *ProductHandler) Get(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, webResponse)
+	c.SecureJSON(http.StatusOK, webResponse)
 }
 func (h *ProductHandler) Delete(c *gin.Context) {
 	categoryID := c.Param("category")
@@ -68,7 +68,7 @@ func (h *ProductHandler) Delete(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
+	c.SecureJSON(http.StatusOK, gin.H{
 		"message": "Category DELETED successfully",
 	})
 }
@@ -85,7 +85,7 @@ func (h *ProductHandler) Update(c *gin.Context) {
 	if err != nil {
 		slog.Warn("Errors in Update handler", "error", err.Error())
 	}
-	c.JSON(http.StatusCreated, gin.H{
+	c.SecureJSON(http.StatusCreated, gin.H{
 		"message": "Category UPDATED successfully",
 	})
 }

@@ -24,6 +24,5 @@ func (h *UserHandler) UserHandlerRoutes(router *gin.RouterGroup) *gin.RouterGrou
 		user.PUT("/:login", h.Update)
 		user.DELETE("/:login", h.Delete)
 	}
-
 	return user
 }
