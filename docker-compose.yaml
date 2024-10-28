@@ -31,7 +31,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-    env_file: 
+    env_file:
       - .env.production
 
   redis:
@@ -44,18 +44,31 @@ services:
     networks:
       - db_net
     command: /bin/sh -c "redis-server --requirepass ${REDIS_PASSWORD}"
+    # command: >
+    #   sh -c '
+    #     mkdir -p /usr/local/etc/redis &&
+    #     echo "bind 0.0.0.0" > /usr/local/etc/redis/redis.conf &&
+    #     echo "requirepass $REDIS_PASSWORD" >> /usr/local/etc/redis/redis.conf &&
+    #     echo "appendonly yes" >> /usr/local/etc/redis/redis.conf &&
+    #     echo "appendfsync everysec" >> /usr/local/etc/redis/redis.conf &&
+    #     echo "user default on nopass ~* +@all" > /usr/local/etc/redis/users.acl &&
+    #     redis-server /usr/local/etc/redis/redis.conf --aclfile /usr/local/etc/redis/users.acl
+    #   '
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 3
+    # environment:
+    #   - REDIS_PASSWORD=${REDIS_PASSWORD}
+    #   - REDIS_USER=${REDIS_USER}
     env_file:
       - .env.production
 
   nginx:
     image: nginx
     container_name: golangArchitecture_nginx
-    build: 
+    build:
       context: ./deploy/nginx/
       dockerfile: DockerFile
     ports:
@@ -64,7 +77,6 @@ services:
       - app
     networks:
       - db_net
-    
 
 volumes:
   postgres:
@@ -72,6 +84,7 @@ volumes:
   redis:
     driver: local
   nginx:
+
 
 networks:
   db_net:

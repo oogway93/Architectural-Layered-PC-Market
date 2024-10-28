@@ -9,6 +9,7 @@ import (
 	"github.com/foolin/goview/supports/ginview"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/oogway93/golangArchitecture/internal/adapter/config"
 	APIHandlerAuth "github.com/oogway93/golangArchitecture/internal/core/server/serverAPI/handler/auth"
 	APIHandlerShopCategory "github.com/oogway93/golangArchitecture/internal/core/server/serverAPI/handler/shop/category"
 	APIHandlerShopOrder "github.com/oogway93/golangArchitecture/internal/core/server/serverAPI/handler/shop/order"
@@ -21,6 +22,7 @@ import (
 )
 
 func SetupRouter(
+	config *config.HTTP,
 	ServiceCategory service.ServiceCategory,
 	ServiceProduct service.ServiceProduct,
 	ServiceOrder service.ServiceOrder,
@@ -29,7 +31,7 @@ func SetupRouter(
 ) *gin.Engine {
 	router := gin.Default()
 	router.HTMLRender = ginview.New(goview.Config{
-		Root:      "internal/core/server/serverHTTP/static/templates/shop",
+		Root:      config.TemplatesPath,
 		Extension: ".html",
 		Master:    "base",
 		Partials:  []string{"boostrap", "nav"},

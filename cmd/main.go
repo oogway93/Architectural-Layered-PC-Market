@@ -85,7 +85,7 @@ func main() {
 	authRepo := repositoryPostgresAuth.NewRepositoryAuth(db)
 	authService := serviceAuth.NewServiceAuth(authRepo, cache)
 
-	router := Server.SetupRouter(categoryService, productService, orderService, userService, authService)
+	router := Server.SetupRouter(config.HTTP, categoryService, productService, orderService, userService, authService)
 	server := new(Server.Server)
 	if err := server.Run(config, router); err != nil {
 		slog.Error("Some errors in starting Server", "error", err)

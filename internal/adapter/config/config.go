@@ -46,6 +46,7 @@ type (
 		AllowedOrigins string
 		TLSCertPath    string
 		TLSKeyPath     string
+		TemplatesPath  string
 	}
 )
 
@@ -85,11 +86,12 @@ func New(APP_ENV string) (*Container, error) {
 	}
 
 	http := &HTTP{
-		Env:            os.Getenv("APP_ENV"),
-		URL:            os.Getenv("HTTP_URL"),
-		Port:           os.Getenv("HTTP_PORT"),
-		TLSCertPath:    os.Getenv("TLS_CERT_PATH"),
-		TLSKeyPath:     os.Getenv("TLS_KEY_PATH"),
+		Env:         os.Getenv("APP_ENV"),
+		URL:         os.Getenv("HTTP_URL"),
+		Port:        os.Getenv("HTTP_PORT"),
+		TLSCertPath: os.Getenv("TLS_CERT_PATH"),
+		TLSKeyPath:  os.Getenv("TLS_KEY_PATH"),
+		TemplatesPath: os.Getenv("TEMPLATES_PATH"),
 		AllowedOrigins: os.Getenv("HTTP_ALLOWED_ORIGINS"),
 	}
 
