@@ -9,7 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	handlerAuth "github.com/oogway93/golangArchitecture/internal/core/server/serverAPI/handler/auth"
+	"github.com/oogway93/golangArchitecture/internal/core/server/serverAPI/handler/auth"
 )
 
 func UserIdentity(c *gin.Context) {
