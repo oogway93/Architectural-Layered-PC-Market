@@ -1,4 +1,4 @@
-# Golang Architecture Project
+# Golang Architectural Layered PC Market
 
 
 ## Project's stack
@@ -20,7 +20,7 @@
 
 ### How to start the project(Locally):
 
-1. Make the file .env.development in root of project:
+1. Create the file .env.development in root of project:
 
 ```golang
 DB_PORT=5432
@@ -58,13 +58,13 @@ LOG_FILE_PATH=.../golangArchitecture/logs/application.log
     go run cmd/main.go -env=development
 ```
 
-4. Let's check a browser by an URL:
+4. Let's check out our connection to the golang's server in a browser by an URL:
 ```
     http://localhost:8000/
 ```
 
 ### How to start the project(Production)
-1. Make the file .env.production in root of project:
+1. Create the file .env.production in root of project:
 ```golang
 DB_PORT=5432
 DB_HOST=golangArchitecture_postgres
