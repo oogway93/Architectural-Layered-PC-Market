@@ -18,7 +18,7 @@ func NewRepositoryCategoryShop(db *gorm.DB) *CategoryShopPostgres {
 	}
 }
 
-func (d *CategoryShopPostgres) Create(newCategory *models.Category) {
+func (d *CategoryShopPostgres) Create(newCategory *models.Category) (error) {
 	tx := d.db.Begin()
 	categoryName := newCategory.CategoryName
 
@@ -32,11 +32,13 @@ func (d *CategoryShopPostgres) Create(newCategory *models.Category) {
 		result = tx.Create(&newCategory)
 		if result.Error != nil {
 			slog.Warn("Error creating NEW CATEGORY", "error", result.Error)
+			return result.Error
 		} else {
 			slog.Info("Created NEW CATEGORY", "categoryName", categoryName)
 		}
 	}
 	tx.Commit()
+	return nil
 }
 
 func (d *CategoryShopPostgres) GetAll() ([]models.Category, []map[string]interface{}) {
@@ -88,18 +90,20 @@ func (d *CategoryShopPostgres) Delete(categoryID string) error {
 	return result.Error
 }
 
-func (d *CategoryShopPostgres) Get(categoryID string) (models.Category, map[string]interface{}) {
+func (d *CategoryShopPostgres) Get(categoryID string) (models.Category, map[string]interface{}, error) {
 	var category models.Category
 	var products []models.Product
 	tx := d.db.Begin()
 	result := tx.Where("category_name = ?", categoryID).First(&category)
 	if result.Error != nil {
 		slog.Warn("Error finding by CATEGORY_NAME", "error", result.Error)
+		return models.Category{}, nil, result.Error
 	}
 
 	res := tx.Where("category_id = ?", category.ID).Find(&products)
 	if res.Error != nil {
 		slog.Warn("Error finding PRODUCTS which making relationships with CategoryID by CATEGORY_NAME", "error", res.Error)
+		return models.Category{}, nil, res.Error
 	}
 
 	var resultProducts []map[string]interface{}
@@ -116,7 +120,7 @@ func (d *CategoryShopPostgres) Get(categoryID string) (models.Category, map[stri
 		"products":      resultProducts,
 	}
 	tx.Commit()
-	return category, resultCategory
+	return category, resultCategory, nil
 }
 
 func (d *CategoryShopPostgres) Update(categoryID string, newCategory models.Category) error {

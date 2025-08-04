@@ -21,15 +21,16 @@ type Config struct {
 	SSLMode  string
 }
 
-func DatabaseConnection(cfg Config) *gorm.DB {
+func DatabaseConnection(cfg Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", cfg.Host, cfg.Port, cfg.Username, cfg.Password, cfg.DBName, cfg.SSLMode)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	db.Exec("CREATE SCHEMA IF NOT EXISTS public;")
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Printf("Failed to connect to database: %v", err)
+		return nil, err
 	}
-	return db
+	return db, nil
 }
 
 func NewRepository(db *gorm.DB) *repository.Repository {

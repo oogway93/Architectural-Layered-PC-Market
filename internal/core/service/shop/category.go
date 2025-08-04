@@ -94,7 +94,7 @@ func (s *CategoryShopService) Get(reqFrom, categoryID string) (models.Category, 
 			_ = utils.Deserialize(cachedCategories, &categoryModel)
 			return categoryModel, nil
 		}
-		categoryModel, _ = s.repo.Get(categoryID)
+		categoryModel, _, _ = s.repo.Get(categoryID)
 
 		categoriesSerialized, err := utils.Serialize(categoryModel)
 		if err != nil {
@@ -118,7 +118,7 @@ func (s *CategoryShopService) Get(reqFrom, categoryID string) (models.Category, 
 
 		return models.Category{}, category
 	}
-	_, category = s.repo.Get(categoryID)
+	_, category, _ = s.repo.Get(categoryID)
 
 	categoriesSerialized, err := utils.Serialize(category)
 	if err != nil {

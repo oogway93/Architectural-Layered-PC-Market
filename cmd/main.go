@@ -41,7 +41,7 @@ func main() {
 
 	slog.Info("Starting the application", "app", config.App.Name, "env", APP_ENV)
 
-	db := repositoryPostgres.DatabaseConnection(repositoryPostgres.Config{
+	db, err := repositoryPostgres.DatabaseConnection(repositoryPostgres.Config{
 		Username: config.DB.User,
 		Password: config.DB.Password,
 		Host:     config.DB.Host,
@@ -49,6 +49,9 @@ func main() {
 		DBName:   config.DB.Name,
 		SSLMode:  config.DB.SSLMode,
 	})
+	if err != nil {
+		slog.Warn("DB connection isn`t successful: %s", err)
+	}
 	db.AutoMigrate(&models.User{}, &models.Category{}, &models.Product{}, &models.Order{}, &models.Delivery{}, &models.OrderItem{})
 	slog.Info("Successfully migrated the database")
 

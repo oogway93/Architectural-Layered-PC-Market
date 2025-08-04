@@ -5,10 +5,10 @@ import (
 )
 
 type CategoryRepository interface {
-	Create(newCategory *models.Category)
+	Create(newCategory *models.Category) error
 	GetAll() ([]models.Category, []map[string]interface{})
 	Delete(categoryID string) error
-	Get(categoryID string) (models.Category, map[string]interface{})
+	Get(categoryID string) (models.Category, map[string]interface{}, error) 
 	Update(categoryID string, newCategory models.Category) error
 }
 
