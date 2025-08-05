@@ -100,4 +100,3 @@ LOG_FILE_PATH=/app/logs/application.log
 ```zsh
     sudo docker compose --env-file .env.production up -d --build
 ```
-
