@@ -18,7 +18,7 @@ func NewRepositoryCategoryShop(db *gorm.DB) *CategoryShopPostgres {
 	}
 }
 
-func (d *CategoryShopPostgres) Create(newCategory *models.Category) (error) {
+func (d *CategoryShopPostgres) Create(newCategory *models.Category) error {
 	tx := d.db.Begin()
 	categoryName := newCategory.CategoryName
 
@@ -41,7 +41,7 @@ func (d *CategoryShopPostgres) Create(newCategory *models.Category) (error) {
 	return nil
 }
 
-func (d *CategoryShopPostgres) GetAll() ([]models.Category, []map[string]interface{}) {
+func (d *CategoryShopPostgres) GetAll() ([]models.Category, []map[string]interface{}, error) {
 	var categories []models.Category
 	var products []models.Product
 	tx := d.db.Begin()
@@ -50,6 +50,7 @@ func (d *CategoryShopPostgres) GetAll() ([]models.Category, []map[string]interfa
 
 	if result.Error != nil {
 		slog.Warn("Error finding records from CATEGORY", "error", result.Error)
+		return []models.Category{}, nil, result.Error
 	}
 	var resultCategoriesAPI []map[string]interface{}
 	for _, category := range categories {
@@ -57,6 +58,7 @@ func (d *CategoryShopPostgres) GetAll() ([]models.Category, []map[string]interfa
 		if result.Error != nil {
 			slog.Warn("Error finding records from PRODUCT", "error", result.Error)
 			tx.Rollback()
+			return []models.Category{}, nil, result.Error
 		}
 
 		var resultProducts []map[string]interface{}
@@ -75,7 +77,7 @@ func (d *CategoryShopPostgres) GetAll() ([]models.Category, []map[string]interfa
 	}
 	tx.Commit()
 
-	return categories, resultCategoriesAPI
+	return categories, resultCategoriesAPI, nil
 }
 
 func (d *CategoryShopPostgres) Delete(categoryID string) error {

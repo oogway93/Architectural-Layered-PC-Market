@@ -6,7 +6,7 @@ import (
 
 type CategoryRepository interface {
 	Create(newCategory *models.Category) error
-	GetAll() ([]models.Category, []map[string]interface{})
+	GetAll() ([]models.Category, []map[string]interface{}, error)
 	Delete(categoryID string) error
 	Get(categoryID string) (models.Category, map[string]interface{}, error) 
 	Update(categoryID string, newCategory models.Category) error

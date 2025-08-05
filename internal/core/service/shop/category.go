@@ -42,7 +42,7 @@ func (s *CategoryShopService) GetAll(reqFrom string) ([]models.Category, []map[s
 
 			return categoriesModel, nil
 		}
-		categoriesModel, _ = s.repo.GetAll()
+		categoriesModel, _, _ = s.repo.GetAll()
 
 		if len(categoriesModel) != 0 {
 			categoriesSerialized, err := utils.Serialize(categoriesModel)
@@ -69,7 +69,7 @@ func (s *CategoryShopService) GetAll(reqFrom string) ([]models.Category, []map[s
 
 		return nil, categories
 	}
-	_, categories = s.repo.GetAll()
+	_, categories, _ = s.repo.GetAll()
 
 	if len(categories) != 0 {
 		categoriesSerialized, err := utils.Serialize(categories)
