@@ -10,14 +10,14 @@
 * Docker and Docker Compose
 * Cookies
 * Authorization
-* Nginx
+* Nginx(Proxy)
 * Redis
 * Logging
 * Middlewares
 * API and "Human" parts
 * HTTP/2 and TLS
 
-### How to start the project(Locally):
+### How to start the project(Locally|Development):
 
 1. Create the file .env.development in root of project:
 
@@ -66,14 +66,14 @@ LOG_FILE_PATH=logs/application.log
 1. Create the file .env.production in root of project:
 ```golang
 DB_PORT=5432
-DB_HOST=golangArchitecture_postgres
+DB_HOST=postgres
 DB_USERNAME=postgres
 DB_PASSWORD=postgres
 DB_NAME=postgres
 DB_SSLMode=disable
 SECRET=8DxZ4jzMmA
 
-REDIS_HOST=golangArchitecture_redis
+REDIS_HOST=redis
 REDIS_PORT=6379
 REDIS_PASSWORD=redis
 REDIS_EXPIRATION=1
@@ -81,6 +81,7 @@ REDIS_EXPIRATION=1
 HTTP_URL=app
 HTTP_PORT=8000
 APP_NAME=golangArchitecture
+
 TLS_CERT_PATH=/app/internal/adapter/certifications/cert.pem
 TLS_KEY_PATH=/app/internal/adapter/certifications/key.pem
 TEMPLATES_PATH=/app/internal/core/server/serverHTTP/static/templates/shop
@@ -95,7 +96,7 @@ LOG_FILE_PATH=/app/logs/application.log
 ```
 3. Run the project
 ```zsh
-    sudo docker compose --env-file .env.production up -d --build
+    make runprod
 ```
 
 #### RUNNING TESTS
