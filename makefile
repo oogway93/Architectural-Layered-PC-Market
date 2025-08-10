@@ -3,4 +3,4 @@ test:
 rundev:
 	go run cmd/main.go -env=development   
 runprod:
-	sudo docker compose -f docker-compose.prod.yaml up --build
+	sudo docker compose -f docker-compose.prod.yaml --env-file .env.production up --build
