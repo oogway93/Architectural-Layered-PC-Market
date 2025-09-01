@@ -13,6 +13,10 @@ import (
 )
 
 func UserIdentity(c *gin.Context) {
+	if (c.Request.URL.Path == "/api/user/" || c.Request.URL.Path == "/api/user/auth/login") && c.Request.Method == "POST" {
+		return
+	}
+
 	authHeader := c.GetHeader("Authorization")
 
 	if authHeader == "" {

@@ -7,6 +7,7 @@ import (
 
 type CategoryHandler struct {
 	service service.ServiceCategory
+	
 }
 
 func NewCategoryShopHandler(service service.ServiceCategory) *CategoryHandler {

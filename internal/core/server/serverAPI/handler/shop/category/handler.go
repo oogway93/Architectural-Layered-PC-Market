@@ -1,7 +1,9 @@
 package handlerShopCategory
 
 import (
+	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/oogway93/golangArchitecture/internal/core/entity/API/shop"
@@ -42,6 +44,12 @@ func (h *CategoryHandler) GetAll(c *gin.Context) {
 
 func (h *CategoryHandler) Get(c *gin.Context) {
 	categoryID := c.Param("category")
+	c.Header("Content-Type", "application/json")
+	if strings.Contains(categoryID, "'") || strings.Contains(categoryID, "-") || strings.Contains(categoryID, "|") {
+		slog.Warn("Might Be SQL Injection Attack", "from", c.Request.Host)
+		c.SecureJSON(http.StatusBadRequest, response.WebResponse{http.StatusBadRequest, "Wrong Category ID", nil})
+		return
+	}
 	_, result := h.service.Get("API", categoryID)
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
@@ -49,7 +57,6 @@ func (h *CategoryHandler) Get(c *gin.Context) {
 		Data:   result,
 	}
 
-	c.Header("Content-Type", "application/json")
 	c.SecureJSON(http.StatusOK, webResponse)
 }
 func (h *CategoryHandler) Delete(c *gin.Context) {

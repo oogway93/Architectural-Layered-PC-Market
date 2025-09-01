@@ -3,6 +3,7 @@ package APIShopProducthandler
 import (
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/oogway93/golangArchitecture/internal/core/entity/API/shop"
@@ -48,6 +49,13 @@ func (h *ProductHandler) GetAll(c *gin.Context) {
 func (h *ProductHandler) Get(c *gin.Context) {
 	categoryID := c.Param("category")
 	productID := c.Param("product")
+	if strings.Contains(categoryID, "'") || strings.Contains(categoryID, "-") ||
+		strings.Contains(categoryID, "|") || strings.Contains(productID, "'") ||
+		strings.Contains(productID, "-") || strings.Contains(productID, "|") {
+		slog.Warn("Might Be SQL Injection Attack", "from", c.Request.Host)
+		c.SecureJSON(http.StatusBadRequest, response.WebResponse{http.StatusBadRequest, "Wrong Category ID", nil})
+		return
+	}
 	_, result := h.service.Get("API", categoryID, productID)
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
